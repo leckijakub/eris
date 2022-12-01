@@ -1,0 +1,6 @@
+{
+	"name": "SWIM container",
+	"build": { "dockerfile": "Dockerfile" },
+	"workspaceMount": "source=${localWorkspaceFolder}/..,target=/root/nrf5_sdk/examples/,type=bind,consistency=cached",
+	"workspaceFolder": "/root/nrf5_sdk/examples/${localWorkspaceFolderBasename}"
+}
