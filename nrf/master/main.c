@@ -171,8 +171,7 @@ static void lbs_c_evt_handler(ble_lbs_c_t * p_lbs_c, ble_lbs_c_evt_t * p_lbs_c_e
             err_code = ble_lbs_c_handles_assign(&m_ble_lbs_c,
                                                 p_lbs_c_evt->conn_handle,
                                                 &p_lbs_c_evt->params.peer_db);
-            NRF_LOG_INFO("LED Button service discovered on conn_handle 0x%x.", p_lbs_c_evt->conn_handle);
-            KIMIA_USB_PRINT("LED Button service discovered on conn_handle 0x%x.\r\n", p_lbs_c_evt->conn_handle);
+            KIMIA_USB_PRINT("[INFO]: LED Button service discovered on conn_handle 0x%x.\r\n", p_lbs_c_evt->conn_handle);
 
             err_code = app_button_enable();
             APP_ERROR_CHECK(err_code);
@@ -184,8 +183,7 @@ static void lbs_c_evt_handler(ble_lbs_c_t * p_lbs_c, ble_lbs_c_evt_t * p_lbs_c_e
 
         case BLE_LBS_C_EVT_BUTTON_NOTIFICATION:
         {
-            NRF_LOG_INFO("Button state changed on peer to 0x%x.", p_lbs_c_evt->params.button.button_state);
-            KIMIA_USB_PRINT("Button state changed on peer to 0x%x.\r\n", p_lbs_c_evt->params.button.button_state);
+            KIMIA_USB_PRINT("[INFO]: Button state changed on peer to 0x%x.\r\n", p_lbs_c_evt->params.button.button_state);
             if (p_lbs_c_evt->params.button.button_state)
             {
                 bsp_board_led_on(LEDBUTTON_LED);
@@ -221,13 +219,14 @@ static void ble_evt_handler(ble_evt_t const * p_ble_evt, void * p_context)
         // discovery, update LEDs status and resume scanning if necessary. */
         case BLE_GAP_EVT_CONNECTED:
         {
-            NRF_LOG_INFO("Connected.");
-            KIMIA_USB_PRINT("Connected.\r\n");
+            KIMIA_USB_PRINT("[INFO]: Connected.\r\n");
             err_code = ble_lbs_c_handles_assign(&m_ble_lbs_c, p_gap_evt->conn_handle, NULL);
             APP_ERROR_CHECK(err_code);
 
             err_code = ble_db_discovery_start(&m_db_disc, p_gap_evt->conn_handle);
             APP_ERROR_CHECK(err_code);
+
+            err_code = sd_ble_gap_rssi_start(p_gap_evt->conn_handle, 1, 0);
 
             // Update LEDs status, and check if we should be looking for more
             // peripherals to connect to.
@@ -239,17 +238,27 @@ static void ble_evt_handler(ble_evt_t const * p_ble_evt, void * p_context)
         // the LEDs status and start scanning again.
         case BLE_GAP_EVT_DISCONNECTED:
         {
-            NRF_LOG_INFO("Disconnected.");
+            err_code = sd_ble_gap_rssi_stop(p_gap_evt->conn_handle);
+            APP_ERROR_CHECK(err_code);
+            KIMIA_USB_PRINT("[INFO]: Disconnected.\r\n");
             scan_start();
         } break;
+
+        case BLE_GAP_EVT_RSSI_CHANGED:
+        {
+            int8_t rssi;
+            uint8_t p_ch_index;
+            err_code = sd_ble_gap_rssi_get(p_gap_evt->conn_handle, &rssi, &p_ch_index);
+            APP_ERROR_CHECK(err_code);
+            KIMIA_USB_PRINT("[INFO]: RSSI: %d.\r\n", rssi);
+        }break;
 
         case BLE_GAP_EVT_TIMEOUT:
         {
             // We have not specified a timeout for scanning, so only connection attemps can timeout.
             if (p_gap_evt->params.timeout.src == BLE_GAP_TIMEOUT_SRC_CONN)
             {
-                NRF_LOG_DEBUG("Connection request timed out.");
-                KIMIA_USB_PRINT("Connection request timed out.\r\n");
+                KIMIA_USB_PRINT("[DEBUG]: Connection request timed out.\r\n");
             }
         } break;
 
@@ -263,7 +272,7 @@ static void ble_evt_handler(ble_evt_t const * p_ble_evt, void * p_context)
 
         case BLE_GAP_EVT_PHY_UPDATE_REQUEST:
         {
-            NRF_LOG_DEBUG("PHY update request.");
+            KIMIA_USB_PRINT("[DEBUG]: PHY update request.\r\n");
             ble_gap_phys_t const phys =
             {
                 .rx_phys = BLE_GAP_PHY_AUTO,
@@ -276,7 +285,7 @@ static void ble_evt_handler(ble_evt_t const * p_ble_evt, void * p_context)
         case BLE_GATTC_EVT_TIMEOUT:
         {
             // Disconnect on GATT Client timeout event.
-            NRF_LOG_DEBUG("GATT Client Timeout.");
+            KIMIA_USB_PRINT("[DEBUG]: GATT Client Timeout.\r\n");
             err_code = sd_ble_gap_disconnect(p_ble_evt->evt.gattc_evt.conn_handle,
                                              BLE_HCI_REMOTE_USER_TERMINATED_CONNECTION);
             APP_ERROR_CHECK(err_code);
@@ -285,7 +294,7 @@ static void ble_evt_handler(ble_evt_t const * p_ble_evt, void * p_context)
         case BLE_GATTS_EVT_TIMEOUT:
         {
             // Disconnect on GATT Server timeout event.
-            NRF_LOG_DEBUG("GATT Server Timeout.");
+            KIMIA_USB_PRINT("[DEBUG]: GATT Server Timeout.\r\n");
             err_code = sd_ble_gap_disconnect(p_ble_evt->evt.gatts_evt.conn_handle,
                                              BLE_HCI_REMOTE_USER_TERMINATED_CONNECTION);
             APP_ERROR_CHECK(err_code);
@@ -564,7 +573,7 @@ int main(void)
     APP_ERROR_CHECK(ret);
 
     // Start execution.
-    NRF_LOG_INFO("Lab5");
+    KIMIA_USB_PRINT("[INFO]: Lab5\r\n");
     scan_start();
 
     // Turn on the LED to signal scanning.
