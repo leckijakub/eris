@@ -13,6 +13,8 @@ flash: build
 log:
 	sshpass -p $(remote_pass) ssh -p 120$(board_id) $(remote_user)@153.19.49.102 -t 'minicom -D $(usb_path)'
 
+logs:
+
 reset:
 	curl http://153.19.49.102:3001/resetNRF52v2/$(board_id)
 
