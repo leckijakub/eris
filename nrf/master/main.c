@@ -489,6 +489,14 @@ static void scan_evt_handler(scan_evt_t const * p_scan_evt)
     ret_code_t err_code;
     char log_buffer[512] = {0};
     char *log_p = log_buffer;
+
+    uint16_t parsed_name_len;
+    uint8_t const * p_parsed_name;
+    uint16_t data_offset = 0;
+    // uint16_t target_name_len = strlen(m_target_periph_name);
+    uint16_t target_name_len = 5;
+    ble_gap_evt_adv_report_t const * adv_report;
+
     switch(p_scan_evt->scan_evt_id)
     {
         case NRF_BLE_SCAN_EVT_CONNECTING_ERROR:
@@ -497,14 +505,44 @@ static void scan_evt_handler(scan_evt_t const * p_scan_evt)
             break;
 
         case NRF_BLE_SCAN_EVT_FILTER_MATCH:
-        log_p += sprintf(log_p, "\r\nFound BT device:\r\n");
-        log_p += sprint_address(log_p, p_scan_evt->params.filter_match.p_adv_report);
-        log_p += sprint_name(log_p, p_scan_evt->params.filter_match.p_adv_report);
-        log_p += sprintf(log_p, "rssi: %d\r\n", p_scan_evt->params.filter_match.p_adv_report->rssi);
-        log_p += sprint_manufacturer_data(log_p, p_scan_evt->params.filter_match.p_adv_report);
-        // mac = p_scan_evt->params.filter_match.p_adv_report->peer_addr.addr;
-        KIMIA_USB_PRINT("%s",log_buffer);
+            log_p += sprintf(log_p, "\r\nFound BT device:\r\n");
+            log_p += sprint_address(log_p, p_scan_evt->params.filter_match.p_adv_report);
+            log_p += sprint_name(log_p, p_scan_evt->params.filter_match.p_adv_report);
+            log_p += sprintf(log_p, "rssi: %d\r\n", p_scan_evt->params.filter_match.p_adv_report->rssi);
+            log_p += sprintf(log_p, "channel: %d\r\n", p_scan_evt->params.filter_match.p_adv_report->ch_index);
+            log_p += sprint_manufacturer_data(log_p, p_scan_evt->params.filter_match.p_adv_report);
+            KIMIA_USB_PRINT("%s",log_buffer);
+            break;
+        case NRF_BLE_SCAN_EVT_NOT_FOUND:
+            // uint16_t target_name_len = strlen(m_target_periph_name);
 
+            adv_report = p_scan_evt->params.p_not_found;
+
+            /* Scan encoded adv. payload for data of type BLE_GAP_AD_TYPE_COMPLETE_LOCAL_NAME */
+            parsed_name_len = ble_advdata_search(
+                adv_report->data.p_data, adv_report->data.len, &data_offset, BLE_GAP_AD_TYPE_COMPLETE_LOCAL_NAME);
+
+            /* Name found if parsed_name_len != 0 */
+            if (!parsed_name_len){
+                break;
+            }
+            p_parsed_name = &adv_report->data.p_data[data_offset];
+            // compare only target_name_len chars of advertised name and target name
+            if(memcmp(m_target_periph_name, p_parsed_name, target_name_len)== 0)
+            {
+                log_p += sprintf(log_p, "\r\nFound Other BT device:\r\n");
+                log_p += sprint_address(log_p, adv_report);
+                log_p += sprint_name(log_p, adv_report);
+                log_p += sprintf(log_p, "rssi: %d\r\n", adv_report->rssi);
+                log_p += sprintf(log_p, "channel: %d\r\n", adv_report->ch_index);
+                log_p += sprint_manufacturer_data(log_p, adv_report);
+                KIMIA_USB_PRINT("%s",log_buffer);
+
+                // connect with peripheral
+                // nrf_ble_scan_connect_with_target(&m_scan, adv_report);
+
+            }
+            break;
         default:
           break;
     }
@@ -516,7 +554,7 @@ static void scan_init(void)
     nrf_ble_scan_init_t init_scan;
 
     memset(&init_scan, 0, sizeof(init_scan));
-    init_scan.connect_if_match = true;
+    // init_scan.connect_if_match = true;
 
     init_scan.conn_cfg_tag     = APP_BLE_CONN_CFG_TAG;
 
@@ -546,7 +584,7 @@ static void blink_handler(void* p_context)
         bsp_board_led_off(LEDBUTTON_LED);
     }
     ble_lbs_led_status_send(&m_ble_lbs_c,(uint8_t)led_on);
-    KIMIA_USB_PRINT("TICK\r\n");
+    // KIMIA_USB_PRINT("TICK\r\n");
 }
 
 
