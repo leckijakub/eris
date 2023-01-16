@@ -15,4 +15,7 @@ RUN wget ${SDK_URL} && \
 # update the path to GNU binaries
 RUN sed -i "s@GNU_INSTALL_ROOT ?= .*@GNU_INSTALL_ROOT ?= /usr/bin/@g" ${SDK_DIR}/components/toolchain/gcc/Makefile.posix
 
+COPY sd_s340_6.1.1/ANT_s340_nrf52840_6.1.1.API/include ${SDK_DIR}/components/softdevice/s340/headers/
+COPY sd_s340_6.1.1/ANT_s340_nrf52840_6.1.1.hex ${SDK_DIR}/components/softdevice/s340/hex/
+
 WORKDIR ${SDK_DIR}/examples/

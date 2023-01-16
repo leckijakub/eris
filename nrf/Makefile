@@ -13,11 +13,6 @@ master_board_id := 02
 client_board_id := 04
 jammer_board_id := 03
 
-export sdk_path := $(current_dir)/../../
-export remote_user := root
-export remote_pass := root
-export usb_path := /dev/ttyACM1
-
 # Common actions definitions
 actions := build clean flash log reset
 no_global_actions := log
