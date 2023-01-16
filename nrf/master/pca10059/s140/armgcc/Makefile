@@ -1,4 +1,4 @@
-PROJECT_NAME     := ble_app_blinky_c_pca10056_s140
+PROJECT_NAME     := espar_master_pca10056_s140
 TARGETS          := nrf52840_xxaa
 OUTPUT_DIRECTORY := _build
 
@@ -6,7 +6,7 @@ SDK_ROOT := ../../../../../..
 PROJ_DIR := ../../..
 
 $(OUTPUT_DIRECTORY)/nrf52840_xxaa.out: \
-  LINKER_SCRIPT  := ble_app_blinky_c_gcc_nrf52.ld
+  LINKER_SCRIPT  := armgcc_s140_nrf52840_xxaa.ld
 
 # Source files common to all targets
 SRC_FILES += \
