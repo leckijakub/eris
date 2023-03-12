@@ -25,8 +25,8 @@
 * To makro działa dokładnie jak printf, tyle że printuje na USB
 * 
 */
-#define KIMIA_USB_PRINT( ...)  \
-    kimia_usb_log_write(kimia_usb_log_get_txbuf(),snprintf(kimia_usb_log_get_txbuf(),WRITE_SIZE, __VA_ARGS__) )
+#define USB_SER_PRINT( ...)  \
+    usb_ser_write(usb_ser_log_get_txbuf(),snprintf(usb_ser_log_get_txbuf(),WRITE_SIZE, __VA_ARGS__) )
 
 
 
@@ -34,44 +34,28 @@
 /**
 * Inicjalizacja biblioteki
 */
-void kimia_usb_log_init();
+void usb_ser_init();
+
+void usb_ser_enable();
 
 /**
 * Funkcja zajmująca się obsługą procesu USB, pownna być dodana w funkcji idle_state_handle by wszystko działało
 *
 * @ret false jeśli nie ma żadnych eventów
 */
-bool kimia_usb_log_process();
+bool usb_ser_events_process();
 
 /**
 * Zwraca statyczny bufor tx ukryty w pliku .c
 */
-char* kimia_usb_log_get_txbuf();
+char* usb_ser_log_get_txbuf();
 
 /**
-* Funkcja pomocnicza dla makra KIMIA_USB_PRINT
+* Funkcja pomocnicza dla makra USB_SER_PRINT
 * Używanie jej poza makrem będzie raczej uciążliwe
 */
 void kimia_usb_log_write(char* tx,size_t size);
+void usb_ser_write(char* buf, size_t size);
 
-/*
-$(SDKDIR)/components/libraries/usbd
-app_usbd.c
-app_usbd_core.c
-app_usbd_string_desc.c
-app_usbd_serial_num.c
-
-$(SDKDIR)/components/libraries/usbd/class/cdc/acm
-app_usbd_cdc_acm.c
-
-
-$(SDKDIR)/modules/nrfx/drivers/src
-nrfx_usbd.c
-nrfx_systick.c
-nrfx_power.c
-
-$(SDKDIR)/integration/nrfx/legacy
-nrf_drv_power.c
-*/
 
 #endif

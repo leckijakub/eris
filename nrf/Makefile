@@ -9,7 +9,7 @@ jammer := jammer
 agents := $(master) $(client) $(jammer)
 
 # Remote boards IDs
-master_board_id := 02
+master_board_id := 01
 client_board_id := 04
 jammer_board_id := 03
 

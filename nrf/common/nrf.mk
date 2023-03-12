@@ -9,10 +9,18 @@ sd_id ?= 0xCA
 sdk_path ?= $(current_dir)/../../..
 remote_user ?= root
 remote_pass ?= root
-usb_path ?= /dev/ttyACM1
+usb_path ?= /dev/ttyACM0
 
 build:
 	$(MAKE) -C pca10059/$(sd_version)/armgcc
+	nrfutil pkg generate --hw-version 52 \
+		--sd-req $(sd_req) \
+		--sd-id $(sd_id) \
+		--softdevice $(sdk_path)/components/softdevice/$(sd_version)/hex/$(sd_hex_file)  \
+		--debug-mode \
+		--application pca10059/$(sd_version)/armgcc/_build/nrf52840_xxaa.hex \
+		dfu.zip
+
 
 flash: build
 	$(info $(board_id))
