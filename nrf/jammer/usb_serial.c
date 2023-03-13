@@ -159,7 +159,7 @@ static void usbd_user_ev_handler(app_usbd_event_type_t event)
 	}
 }
 
-void usb_ser_init(void(*input_parser))
+void usb_ser_init(void(*input_handler))
 {
 	ret_code_t ret;
 	static const app_usbd_config_t usbd_config = {.ev_state_proc =
@@ -174,11 +174,10 @@ void usb_ser_init(void(*input_parser))
 	ret = app_usbd_class_append(class_cdc_acm);
 	APP_ERROR_CHECK(ret);
 
-	usb_ser_input_parser = input_parser;
+	usb_ser_input_parser = input_handler;
 	app_usbd_enable();
 	app_usbd_start();
 
-	bsp_board_led_on(BSP_BOARD_LED_0);
 }
 
 char *usb_ser_log_get_txbuf() { return usb_ser_log_buffer; }
