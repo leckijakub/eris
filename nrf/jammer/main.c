@@ -15,11 +15,22 @@
 
 #include "nrf_delay.h"
 #include "usb_serial.h"
+#include "client.h"
+
+#define TX_LED BSP_BOARD_LED_2
+#define JAMMER_LED BSP_BOARD_LED_3
+
+enum dut_state { DUT_STATE_JAMMING, DUT_STATE_TX, DUT_STATE_IDLE };
+enum dut_state present_state = DUT_STATE_IDLE;
 
 /**@brief Initialize application.
  */
-static void application_initialize()
+int jammer_start(uint8_t power_level)
 {
+	if (power_level < 0 || power_level > 5) {
+		USB_SER_PRINT("Invalid power level passed.\r\n");
+		return 0;
+	}
 	uint32_t err_code = sd_ant_cw_test_mode_init();
 	APP_ERROR_CHECK(err_code);
 
@@ -34,30 +45,42 @@ static void application_initialize()
 		APP_ERROR_CHECK(sd_clock_hfclk_is_running(&hfclk_is_running));
 	}
 
-	// CW Mode at +4dBm, 2402 MHz with Modulated Transmission
-	err_code = sd_ant_cw_test_mode(02, RADIO_TX_POWER_LVL_5, 0, 1);
-	// err_code = sd_ant_cw_test_mode(26, RADIO_TX_POWER_LVL_5, 0, 1);
-	// err_code = sd_ant_cw_test_mode(80, RADIO_TX_POWER_LVL_5, 0, 1);
+	err_code = sd_ant_cw_test_mode(02, power_level, 0, 1);
 	APP_ERROR_CHECK(err_code);
 
-	err_code = nrf_pwr_mgmt_init();
-	APP_ERROR_CHECK(err_code);
+	bsp_board_led_on(JAMMER_LED);
+	USB_SER_PRINT("Jamming started, Power: %d\r\n", power_level);
+
+	return 1;
 }
 
-/**@brief Function for ANT stack initialization.
- *
- * @details Initializes the SoftDevice and the ANT event interrupt.
- */
-static void softdevice_setup(void)
+int jammer_stop()
 {
-	ret_code_t err_code = nrf_sdh_enable_request();
-	APP_ERROR_CHECK(err_code);
-
-	ASSERT(nrf_sdh_is_enabled());
-
-	// err_code = sd_ant_enable();
-	// APP_ERROR_CHECK(err_code);
+	if (sd_ant_stack_reset() == NRF_ERROR_TIMEOUT) {
+		USB_SER_PRINT("Failed to stop jamming\r\n");
+		return 0;
+	}
+	bsp_board_led_off(JAMMER_LED);
+	USB_SER_PRINT("Jamming stopped\r\n");
+	return 0;
 }
+
+int tx_start()
+{
+	client_start();
+	USB_SER_PRINT("TX started\r\n");
+	bsp_board_led_on(TX_LED);
+	return 0;
+}
+
+int tx_stop()
+{
+	client_stop();
+	USB_SER_PRINT("TX stopped\r\n");
+	bsp_board_led_off(TX_LED);
+	return 0;
+}
+
 
 /**@brief Function for handling the idle state (main loop).
  *
@@ -77,10 +100,11 @@ static inline void reset_to_bootloader() { nrf_gpio_cfg_output(19); }
 
 enum espar_cmd {
 	ESPAR_CMD_HELP,
-	ESPAR_CMD_START,
-	ESPAR_CMD_STOP,
+	ESPAR_CMD_JAM,
+	ESPAR_CMD_IDLE,
 	ESPAR_CMD_RESET,
 	ESPAR_CMD_UNKNOWN,
+	ESPAR_CMD_TX,
 };
 
 void print_help()
@@ -88,9 +112,10 @@ void print_help()
 	USB_SER_PRINT("\r\nESPAR DUT device\r\n"
 		      "Commands:\r\n\n"
 		      "help	- Print this help\r\n"
-		      "start	- Start jamming\r\n"
-		      "stop	- Stop jamming\r\n"
-		      "reset	- reset the board to bootloader - WARNING: Application will be erased!!!\r\n");
+		      "jam	- Start jamming\r\n"
+		      "tx	- Start transmitting\r\n"
+		      "idle	- Idle state\r\n"
+		      "reset	- Reset the board to bootloader\r\n");
 }
 
 enum espar_cmd parse_cmd(char *cmd_buf, size_t cmd_size)
@@ -98,15 +123,57 @@ enum espar_cmd parse_cmd(char *cmd_buf, size_t cmd_size)
 	// USB_SER_PRINT("PARSING CMD: %s", cmd_buf);
 	if (!strncmp("help", cmd_buf, cmd_size)) {
 		return ESPAR_CMD_HELP;
-	} else if (!strncmp("start", cmd_buf, cmd_size)) {
-		return ESPAR_CMD_START;
-	} else if (!strncmp("stop", cmd_buf, cmd_size)) {
-		return ESPAR_CMD_STOP;
+	} else if (!strncmp("jam", cmd_buf, cmd_size)) {
+		return ESPAR_CMD_JAM;
+	} else if (!strncmp("tx", cmd_buf, cmd_size)) {
+		return ESPAR_CMD_TX;
+	} else if (!strncmp("idle", cmd_buf, cmd_size)) {
+		return ESPAR_CMD_IDLE;
 	} else if (!strncmp("reset", cmd_buf, cmd_size)) {
 		return ESPAR_CMD_RESET;
 	}
 
 	return ESPAR_CMD_UNKNOWN;
+}
+
+int dut_set_state(enum dut_state state, int power_level)
+{
+	if (present_state == state) {
+		USB_SER_PRINT("DUT already in requested state\r\n");
+		return 1;
+	}
+
+	/* reset state to idle if other state was active  */
+	if (present_state != DUT_STATE_IDLE) {
+		switch (present_state) {
+		case DUT_STATE_JAMMING:
+			jammer_stop();
+			break;
+		case DUT_STATE_TX:
+			tx_stop();
+			break;
+		default:
+			break;
+		}
+		present_state = DUT_STATE_IDLE;
+	}
+
+	/* set requested state */
+	switch (state) {
+	case DUT_STATE_JAMMING:
+		if (!jammer_start(power_level)) {
+			return 0;
+		}
+		break;
+	case DUT_STATE_TX:
+		tx_start();
+		break;
+	default:
+		break;
+	}
+
+	present_state = state;
+	return 1;
 }
 
 void input_handler(char *input_buff, size_t input_size)
@@ -146,18 +213,14 @@ void input_handler(char *input_buff, size_t input_size)
 		case ESPAR_CMD_HELP:
 			print_help();
 			break;
-		case ESPAR_CMD_START:
-			if (arg == -1) {
-				USB_SER_PRINT(
-				    "Specify power level to start jamming\r\n");
-				goto cmd_exit;
-			}
-			USB_SER_PRINT("Jamming START, Power: %d\r\n", arg);
-			bsp_board_led_on(BSP_BOARD_LED_3);
+		case ESPAR_CMD_JAM:
+			dut_set_state(DUT_STATE_JAMMING, arg);
 			break;
-		case ESPAR_CMD_STOP:
-			USB_SER_PRINT("Jamming STOP\r\n");
-			bsp_board_led_off(BSP_BOARD_LED_3);
+		case ESPAR_CMD_TX:
+			dut_set_state(DUT_STATE_TX, arg);
+			break;
+		case ESPAR_CMD_IDLE:
+			dut_set_state(DUT_STATE_IDLE, arg);
 			break;
 		case ESPAR_CMD_RESET:
 			USB_SER_PRINT("Resetting to bootloader\r\n");
@@ -177,15 +240,16 @@ void input_handler(char *input_buff, size_t input_size)
 /* Main function */
 int main(void)
 {
+	ret_code_t err_code;
+
 	leds_init();
 	usb_ser_init(&input_handler);
 	USB_SER_PRINT("[INFO]: Log init done.\r\n");
-	softdevice_setup();
-	USB_SER_PRINT("[INFO]: Softdevice init done.\r\n");
-	application_initialize();
-	USB_SER_PRINT("[INFO]: Application init done.\r\n");
+	err_code = nrf_pwr_mgmt_init();
+	APP_ERROR_CHECK(err_code);
+	client_init();
 
-	USB_SER_PRINT("ANT Continuous Waveform Mode example started.\r\n");
+	USB_SER_PRINT("ESPART DUT device started.\r\n");
 
 	bsp_board_led_on(BSP_BOARD_LED_0);
 

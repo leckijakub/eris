@@ -74,7 +74,8 @@ SRC_FILES += \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_power.c \
   $(SDK_ROOT)/integration/nrfx/legacy/nrf_drv_power.c \
   $(SDK_ROOT)/components/libraries/bsp/bsp.c \
-  $(PROJ_DIR)/usb_serial.c
+  $(PROJ_DIR)/usb_serial.c \
+  $(PROJ_DIR)/client.c
 
 # Include folders common to all targets
 INC_FOLDERS += \
