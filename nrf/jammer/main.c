@@ -16,11 +16,13 @@
 #include "nrf_delay.h"
 #include "usb_serial.h"
 #include "client.h"
+#include "master.h"
 
 #define TX_LED BSP_BOARD_LED_2
 #define JAMMER_LED BSP_BOARD_LED_3
+#define RX_LED BSP_BOARD_LED_0
 
-enum dut_state { DUT_STATE_JAMMING, DUT_STATE_TX, DUT_STATE_IDLE };
+enum dut_state { DUT_STATE_JAMMING, DUT_STATE_TX, DUT_STATE_RX, DUT_STATE_IDLE };
 enum dut_state present_state = DUT_STATE_IDLE;
 
 /**@brief Initialize application.
@@ -82,6 +84,24 @@ int tx_stop()
 }
 
 
+int rx_start()
+{
+	scan_start();
+	USB_SER_PRINT("RX started\r\n");
+	bsp_board_led_on(RX_LED);
+	return 0;
+}
+
+int rx_stop()
+{
+	scan_stop();
+	USB_SER_PRINT("RX stopped\r\n");
+	bsp_board_led_off(RX_LED);
+	return 0;
+}
+
+
+
 /**@brief Function for handling the idle state (main loop).
  *
  * @details If there is no pending log operation, then sleep until next the next
@@ -105,6 +125,7 @@ enum espar_cmd {
 	ESPAR_CMD_RESET,
 	ESPAR_CMD_UNKNOWN,
 	ESPAR_CMD_TX,
+	ESPAR_CMD_RX,
 };
 
 void print_help()
@@ -131,6 +152,8 @@ enum espar_cmd parse_cmd(char *cmd_buf, size_t cmd_size)
 		return ESPAR_CMD_IDLE;
 	} else if (!strncmp("reset", cmd_buf, cmd_size)) {
 		return ESPAR_CMD_RESET;
+	} else if (!strncmp("rx", cmd_buf, cmd_size)) {
+		return ESPAR_CMD_RX;
 	}
 
 	return ESPAR_CMD_UNKNOWN;
@@ -152,6 +175,9 @@ int dut_set_state(enum dut_state state, int power_level)
 		case DUT_STATE_TX:
 			tx_stop();
 			break;
+		case DUT_STATE_RX:
+			rx_stop();
+			break;
 		default:
 			break;
 		}
@@ -168,6 +194,9 @@ int dut_set_state(enum dut_state state, int power_level)
 	case DUT_STATE_TX:
 		tx_start();
 		break;
+	case DUT_STATE_RX:
+		rx_start();
+		break;
 	default:
 		break;
 	}
@@ -179,14 +208,17 @@ int dut_set_state(enum dut_state state, int power_level)
 void input_handler(char *input_buff, size_t input_size)
 {
 	// struct espar_ctrl ctrl;
-	static char cmd_buff[64] = {0};
+	static char cmd_buff[128] = {0};
 	static char cmd_buf_size = 0;
-	char cmd[32];
+	char cmd[128];
 	int arg;
 
 	// echo input back to console
 	USB_SER_PRINT("%.*s", input_size, input_buff);
-
+	if(cmd_buf_size + input_size >= 128){
+		USB_SER_PRINT("\r\nCMD buffer exceeded\r\n");
+		goto cmd_exit;
+	}
 	// store input in buffer for later parsing
 	memcpy(cmd_buff + cmd_buf_size, input_buff, input_size);
 	cmd_buf_size += input_size;
@@ -219,6 +251,9 @@ void input_handler(char *input_buff, size_t input_size)
 		case ESPAR_CMD_TX:
 			dut_set_state(DUT_STATE_TX, arg);
 			break;
+		case ESPAR_CMD_RX:
+			dut_set_state(DUT_STATE_RX, arg);
+			break;
 		case ESPAR_CMD_IDLE:
 			dut_set_state(DUT_STATE_IDLE, arg);
 			break;
@@ -227,7 +262,7 @@ void input_handler(char *input_buff, size_t input_size)
 			reset_to_bootloader();
 			break;
 		case ESPAR_CMD_UNKNOWN:
-			USB_SER_PRINT("Unknown command\r\n");
+			USB_SER_PRINT("Unknown command: \"%s\" \r\n", cmd_buff);
 		default:
 			break;
 		}
@@ -248,10 +283,11 @@ int main(void)
 	err_code = nrf_pwr_mgmt_init();
 	APP_ERROR_CHECK(err_code);
 	client_init();
+	master_init();
 
-	USB_SER_PRINT("ESPART DUT device started.\r\n");
+	USB_SER_PRINT("ESPAR DUT device started.\r\n");
 
-	bsp_board_led_on(BSP_BOARD_LED_0);
+	// bsp_board_led_on(BSP_BOARD_LED_0);
 
 	// Enter main loop.
 	for (;;) {

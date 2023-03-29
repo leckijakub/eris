@@ -24,6 +24,7 @@
 #include "nrf_log.h"
 #include "nrf_log_ctrl.h"
 #include "nrf_log_default_backends.h"
+#include "usb_serial.h"
 
 
 #define DEVICE_NAME                     "ESPAR_CLIENT"                         /**< Name of device. Will be included in the advertising data. */
@@ -241,37 +242,64 @@ static void ble_evt_handler(ble_evt_t const * p_ble_evt, void * p_context)
 {
     ret_code_t err_code;
 
+    // For readability.
+    ble_gap_evt_t const * p_gap_evt = &p_ble_evt->evt.gap_evt;
+
     switch (p_ble_evt->header.evt_id)
     {
+        // Upon connection, check which peripheral has connected (HR or RSC), initiate DB
+        // discovery, update LEDs status and resume scanning if necessary. */
         case BLE_GAP_EVT_CONNECTED:
-            NRF_LOG_INFO("Connected");
-            m_conn_handle = p_ble_evt->evt.gap_evt.conn_handle;
-            err_code = nrf_ble_qwr_conn_handle_assign(&m_qwr, m_conn_handle);
-            APP_ERROR_CHECK(err_code);
-            err_code = app_button_enable();
-            APP_ERROR_CHECK(err_code);
-            break;
+        {
+            USB_SER_PRINT("[INFO]: Connected.\r\n");
 
+            err_code = sd_ble_gap_rssi_start(p_gap_evt->conn_handle, 1, 0);
+
+            // Update LEDs status, and check if we should be looking for more
+            // peripherals to connect to.
+            // bsp_board_led_on(CENTRAL_CONNECTED_LED);
+            // bsp_board_led_off(CENTRAL_SCANNING_LED);
+        } break;
+
+        // Upon disconnection, reset the connection handle of the peer which disconnected, update
+        // the LEDs status and start scanning again.
         case BLE_GAP_EVT_DISCONNECTED:
-            NRF_LOG_INFO("Disconnected");
-            m_conn_handle = BLE_CONN_HANDLE_INVALID;
-            err_code = app_button_disable();
+        {
+            err_code = sd_ble_gap_rssi_stop(p_gap_evt->conn_handle);
             APP_ERROR_CHECK(err_code);
-            advertising_start();
-            break;
+            USB_SER_PRINT("[INFO]: Disconnected.\r\n");
+            scan_start();
+        } break;
 
-        case BLE_GAP_EVT_SEC_PARAMS_REQUEST:
-            // Pairing not supported
-            err_code = sd_ble_gap_sec_params_reply(m_conn_handle,
-                                                   BLE_GAP_SEC_STATUS_PAIRING_NOT_SUPP,
-                                                   NULL,
-                                                   NULL);
+        case BLE_GAP_EVT_RSSI_CHANGED:
+        {
+            int8_t rssi;
+            uint8_t p_ch_index;
+            err_code = sd_ble_gap_rssi_get(p_gap_evt->conn_handle, &rssi, &p_ch_index);
             APP_ERROR_CHECK(err_code);
-            break;
+            USB_SER_PRINT("[INFO]: RSSI: %d.\r\n", rssi);
+        }break;
+
+        case BLE_GAP_EVT_TIMEOUT:
+        {
+            // We have not specified a timeout for scanning, so only connection attemps can timeout.
+            if (p_gap_evt->params.timeout.src == BLE_GAP_TIMEOUT_SRC_CONN)
+            {
+                USB_SER_PRINT("[DEBUG]: Connection request timed out.\r\n");
+            }
+        } break;
+
+        case BLE_GAP_EVT_CONN_PARAM_UPDATE_REQUEST:
+        {
+            // Accept parameters requested by peer.
+            err_code = sd_ble_gap_conn_param_update(p_gap_evt->conn_handle,
+                                        &p_gap_evt->params.conn_param_update_request.conn_params);
+            APP_ERROR_CHECK(err_code);
+        } break;
 
         case BLE_GAP_EVT_PHY_UPDATE_REQUEST:
         {
-            NRF_LOG_DEBUG("PHY update request.");
+            USB_SER_PRINT("[DEBUG]: PHY update request.\r\n");
             ble_gap_phys_t const phys =
             {
                 .rx_phys = BLE_GAP_PHY_AUTO,
@@ -281,27 +309,23 @@ static void ble_evt_handler(ble_evt_t const * p_ble_evt, void * p_context)
             APP_ERROR_CHECK(err_code);
         } break;
 
-        case BLE_GATTS_EVT_SYS_ATTR_MISSING:
-            // No system attributes have been stored.
-            err_code = sd_ble_gatts_sys_attr_set(m_conn_handle, NULL, 0, 0);
-            APP_ERROR_CHECK(err_code);
-            break;
-
         case BLE_GATTC_EVT_TIMEOUT:
+        {
             // Disconnect on GATT Client timeout event.
-            NRF_LOG_DEBUG("GATT Client Timeout.");
+            USB_SER_PRINT("[DEBUG]: GATT Client Timeout.\r\n");
             err_code = sd_ble_gap_disconnect(p_ble_evt->evt.gattc_evt.conn_handle,
                                              BLE_HCI_REMOTE_USER_TERMINATED_CONNECTION);
             APP_ERROR_CHECK(err_code);
-            break;
+        } break;
 
         case BLE_GATTS_EVT_TIMEOUT:
+        {
             // Disconnect on GATT Server timeout event.
-            NRF_LOG_DEBUG("GATT Server Timeout.");
+            USB_SER_PRINT("[DEBUG]: GATT Server Timeout.\r\n");
             err_code = sd_ble_gap_disconnect(p_ble_evt->evt.gatts_evt.conn_handle,
                                              BLE_HCI_REMOTE_USER_TERMINATED_CONNECTION);
             APP_ERROR_CHECK(err_code);
-            break;
+        } break;
 
         default:
             // No implementation needed.

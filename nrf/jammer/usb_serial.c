@@ -36,6 +36,9 @@ volatile static bool usb_ser_opened = false;	/** @brief Indicates if CDC device 
 
 static void usb_ser_write_directly(char *buf, size_t size)
 {
+	if(size > WRITE_SIZE){
+		return;
+	}
 	memcpy(m_tx_buffer, buf, size);
 	app_usbd_cdc_acm_write(&m_app_cdc_acm, m_tx_buffer, size);
 	bsp_board_led_on(BSP_BOARD_LED_1);
@@ -94,13 +97,10 @@ static void cdc_acm_user_ev_handler(app_usbd_class_inst_t const *p_inst,
 						       m_rx_buffer, READ_SIZE);
 		UNUSED_VARIABLE(ret);
 
-		// usb_ser_enable();
-		USB_SER_PRINT("Port opened\r\n");
-
 		break;
 	}
 	case APP_USBD_CDC_ACM_USER_EVT_PORT_CLOSE:
-		usb_ser_opened = false;
+		usb_ser_disable();
 		break;
 	case APP_USBD_CDC_ACM_USER_EVT_TX_DONE:
 		bsp_board_led_off(BSP_BOARD_LED_1);
@@ -110,6 +110,7 @@ static void cdc_acm_user_ev_handler(app_usbd_class_inst_t const *p_inst,
 	case APP_USBD_CDC_ACM_USER_EVT_RX_DONE: {
 		ret_code_t ret;
 		size_t read_bytes;
+		usb_ser_rx_size = 0;
 
 		do {
 			read_bytes = app_usbd_cdc_acm_rx_size(&m_app_cdc_acm);
