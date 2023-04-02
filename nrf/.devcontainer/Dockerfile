@@ -6,7 +6,9 @@ ENV SDK_DIR=/root/nrf5_sdk/
 
 RUN apt update && \
     apt -y upgrade && \
-    apt install -y gcc-arm-none-eabi binutils-arm-none-eabi gdb-multiarch openocd wget unzip make python3 openssh-client git sshpass curl
+    apt install -y gcc-arm-none-eabi binutils-arm-none-eabi gdb-multiarch openocd wget unzip make python3 python3-pip openssh-client git sshpass curl
+
+RUN pip3 install nrfutil
 
 # Prepare NRF5 SDK
 RUN wget ${SDK_URL} && \

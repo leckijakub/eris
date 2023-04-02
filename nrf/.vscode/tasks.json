@@ -1,0 +1,27 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Build docker",
+			"type": "docker-build",
+			"dockerBuild": {
+				"context": "${workspaceFolder}",
+				"dockerfile": "${workspaceFolder}/.devcontainer/Dockerfile",
+				"tag": "${config:docker_image}"
+			}
+		},
+		{
+			"label": "Build DUT software",
+			"type": "shell",
+			"command": "docker run -v ${workspaceFolder}:/root/nrf5_sdk/examples/nrf ${config:docker_image} make -C /root/nrf5_sdk/examples/${workspaceFolderBasename} build",
+			"dependsOn": [
+				"Build docker"
+			],
+			"problemMatcher": [],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			}
+		}
+	]
+}

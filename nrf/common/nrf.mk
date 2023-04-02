@@ -22,14 +22,8 @@ build:
 		dfu.zip
 
 
-flash: build
-	$(info $(board_id))
-	sshpass -p $(remote_pass) scp -P 120$(board_id) pca10059/$(sd_version)/armgcc/_build/nrf52840_xxaa.hex $(sdk_path)/components/softdevice/$(sd_version)/hex/$(sd_hex_file) $(remote_user)@153.19.49.102:/var/tmp
-	sshpass -p $(remote_pass) ssh -p 120$(board_id) $(remote_user)@153.19.49.102 ' \
-		   curl http://153.19.49.102:3001/resetNRF52v2/$(board_id) \
-		&& nrfutil pkg generate --hw-version 52 --sd-req $(sd_req) --sd-id $(sd_id) --softdevice /var/tmp/$(sd_hex_file)  --debug-mode --application /var/tmp/nrf52840_xxaa.hex /var/tmp/dfu.zip \
-		&& nrfutil dfu usb-serial -pkg /var/tmp/dfu.zip -p $(usb_path) -b 115200 \
-		&& rm /var/tmp/*.hex'
+flash:
+	./dut_ctrl.py $(usb_path) reset && ~/.nrfutil/bin/nrfutil dfu usb-serial -pkg dfu.zip -p $(usb_path) -b 115200
 
 log:
 	sshpass -p $(remote_pass) ssh -p 120$(board_id) $(remote_user)@153.19.49.102 -t 'minicom -D $(usb_path)'
