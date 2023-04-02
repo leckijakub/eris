@@ -8,7 +8,7 @@
             "includePath": [
                 "${workspaceFolder}/**",
                 "${SDK_ROOT}/**",
-                "${workspaceFolder}/jammer/pca10059/s340/config/sdk_config.h",
+                "${workspaceFolder}/pca10059/s340/config/sdk_config.h",
             ],
             "defines": [
                 "USE_HAL_DRIVER",

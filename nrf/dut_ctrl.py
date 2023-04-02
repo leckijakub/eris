@@ -2,29 +2,45 @@
 
 import serial
 import argparse
+import sys
+import signal
 
 
 ser = serial.Serial('/dev/ttyACM0', 115200, timeout=0.1)
 
 
+def interrupt_handler(signum, stack):
+	ser.write(b"idle\r")
+	print(ser.readall().decode())
+	ser.close()
+	sys.exit(0)
+
 def reset(args):
-    ser.write(b"reset\r")
+	ser.write(b"reset\r")
 
 
 def jam(args):
-    ser.write(f"jam {args.power_lvl}\r".encode())
+	ser.write(f"jam {args.power_lvl}\r".encode())
+
 
 def tx(args):
-    ser.write(b"tx\r")
+	ser.write(b"tx\r")
+
 
 def rx(args):
-    ser.write(b"rx\r")
+	ser.write(b"rx\r")
+	while True:
+		output = ser.readall().decode()
+		if len(output) > 0:
+			print(output)
+
 
 def idle(args):
-    ser.write(b"idle\r")
+	ser.write(b"idle\r")
+
 
 def write(args):
-    ser.write(f"{args.command}\r".encode())
+	ser.write(f"{args.command}\r".encode())
 
 
 parser = argparse.ArgumentParser()
@@ -40,7 +56,7 @@ idle_parser.set_defaults(func=idle)
 tx_parser = subparsers.add_parser("tx", help="Set board to tx")
 tx_parser.set_defaults(func=tx)
 
-rx_parser = subparsers.add_parser("rx", help="Set board to rx")
+rx_parser = subparsers.add_parser("rx", help="Set board to rx, this action will constantly print to stdout until not terminated with SIGINT.")
 rx_parser.set_defaults(func=rx)
 
 write_parser = subparsers.add_parser("write", help="Write custom command")
@@ -50,13 +66,15 @@ write_parser.set_defaults(func=write)
 args = parser.parse_args()
 
 print(ser.readall().decode())
+
+signal.signal(signal.SIGINT, interrupt_handler)
 try:
-    args.func(args)
+	args.func(args)
 except AttributeError:
-    parser.error("error while executing action")
+	parser.error("error while executing action")
 try:
-    print(ser.readall().decode())
+	print(ser.readall().decode())
 except serial.SerialException:
-    pass
+	pass
 
 ser.close()

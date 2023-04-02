@@ -19,10 +19,6 @@ be downloaded separately.
 * Unpack it to this directory so it has a following structure
   ```
   nrf
-  |-- client
-  |-- common
-  |-- jammer
-  |-- master
   `-- sd_s340_6.1.1
       |-- ANT_s340_nrf52840_6.1.1.API
       |-- ANT_s340_nrf52840_6.1.1.hex

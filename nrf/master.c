@@ -118,10 +118,10 @@ static void scan_evt_handler(scan_evt_t const *p_scan_evt)
 	char *log_p = log_buffer;
 
 	uint16_t parsed_name_len;
-	uint8_t const *p_parsed_name;
+	// uint8_t const *p_parsed_name;
 	uint16_t data_offset = 0;
 	// uint16_t target_name_len = strlen(m_target_periph_name);
-	uint16_t target_name_len = 5;
+	// uint16_t target_name_len = 5;
 	ble_gap_evt_adv_report_t const *adv_report;
 
 	// USB_SER_PRINT("SCANNING HANDLER TRIGGERRED, ID: %d\r\n",
@@ -164,7 +164,7 @@ static void scan_evt_handler(scan_evt_t const *p_scan_evt)
 		if (!parsed_name_len) {
 			break;
 		}
-		p_parsed_name = &adv_report->data.p_data[data_offset];
+		// p_parsed_name = &adv_report->data.p_data[data_offset];
 		// compare only target_name_len chars of advertised name and
 		// target name if(memcmp(m_target_periph_name, p_parsed_name,
 		// target_name_len)== 0)

@@ -268,7 +268,6 @@ static void ble_evt_handler(ble_evt_t const * p_ble_evt, void * p_context)
             err_code = sd_ble_gap_rssi_stop(p_gap_evt->conn_handle);
             APP_ERROR_CHECK(err_code);
             USB_SER_PRINT("[INFO]: Disconnected.\r\n");
-            scan_start();
         } break;
 
         case BLE_GAP_EVT_RSSI_CHANGED:
