@@ -77,7 +77,8 @@ SRC_FILES += \
   $(SDK_ROOT)/components/ble/nrf_ble_scan/nrf_ble_scan.c \
   $(PROJ_DIR)/usb_serial.c \
   $(PROJ_DIR)/client.c \
-  $(PROJ_DIR)/master.c
+  $(PROJ_DIR)/master.c \
+  $(PROJ_DIR)/driver.espar/espar_driver.c 
 
 # Include folders common to all targets
 INC_FOLDERS += \
@@ -212,7 +213,9 @@ INC_FOLDERS += \
   $(SDK_ROOT)/components/libraries/log/src \
   $(SDK_ROOT)/components/libraries/usbd \
   $(SDK_ROOT)/components/libraries/usbd/class/cdc/acm \
-  $(SDK_ROOT)/components/libraries/bsp 
+  $(SDK_ROOT)/components/libraries/bsp \
+  $(PROJ_DIR) \
+  $(PROJ_DIR)/driver.espar \
 
 # Libraries common to all targets
 LIB_FILES += \
@@ -226,13 +229,15 @@ OPT = -O3 -g3
 CFLAGS += $(OPT)
 CFLAGS += -DAPP_TIMER_V2
 CFLAGS += -DAPP_TIMER_V2_RTC1_ENABLED
-CFLAGS += -DBOARD_PCA10059
+CFLAGS += -DBOARD_DD#BOARD_PCA10059
+CFLAGS += -DBOARD_CUSTOM
 CFLAGS += -DCONFIG_GPIO_AS_PINRESET
 CFLAGS += -DFLOAT_ABI_HARD
 CFLAGS += -DNRF52840_XXAA
 CFLAGS += -DNRF_SD_BLE_API_VERSION=7
 CFLAGS += -DS340
 CFLAGS += -DSOFTDEVICE_PRESENT
+CFLAGS += -DUSE_APP_CONFIG
 CFLAGS += -mcpu=cortex-m4
 CFLAGS += -mthumb -mabi=aapcs
 CFLAGS += -Wall 
@@ -251,7 +256,7 @@ ASMFLAGS += -mthumb -mabi=aapcs
 ASMFLAGS += -mfloat-abi=hard -mfpu=fpv4-sp-d16
 ASMFLAGS += -DAPP_TIMER_V2
 ASMFLAGS += -DAPP_TIMER_V2_RTC1_ENABLED
-ASMFLAGS += -DBOARD_PCA10059
+ASMFLAGS += -DBOARD_DD#BOARD_PCA10059
 ASMFLAGS += -DCONFIG_GPIO_AS_PINRESET
 ASMFLAGS += -DFLOAT_ABI_HARD
 ASMFLAGS += -DNRF52840_XXAA

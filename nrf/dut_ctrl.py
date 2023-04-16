@@ -6,7 +6,6 @@ import sys
 import signal
 
 
-ser = serial.Serial('/dev/ttyACM0', 115200, timeout=0.1)
 
 
 def interrupt_handler(signum, stack):
@@ -64,6 +63,7 @@ write_parser.add_argument("command", default="", help="command to write")
 write_parser.set_defaults(func=write)
 
 args = parser.parse_args()
+ser = serial.Serial(args.device, 115200, timeout=0.1)
 
 print(ser.readall().decode())
 

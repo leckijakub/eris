@@ -272,13 +272,47 @@ void input_handler(char *input_buff, size_t input_size)
 	}
 }
 
+#include "nrf_log.h"
+#include "nrf_log_ctrl.h"
+#include "nrf_log_default_backends.h"
+#include "nrf_delay.h"
+#include "app_timer.h"
+#include "espar_driver.h"
+
+static void log_init(void)
+{
+    ret_code_t err_code = NRF_LOG_INIT(app_timer_cnt_get);
+    APP_ERROR_CHECK(err_code);
+
+    NRF_LOG_DEFAULT_BACKENDS_INIT();
+}
+#include "app_button.h"
+#define BUTTON_DETECTION_DELAY          APP_TIMER_TICKS(50)  
+
+uint8_t m_char = 0;
+
+// static void espar_circle(void * p_context){
+// // static void espar_circle(uint8_t pin_no, uint8_t button_action){
+// // 	if(button_action != APP_BUTTON_PUSH)
+// // 	{
+// // 		return;
+// // 	}
+// // 	NRF_LOG_INFO("BUTTON PUSHED");
+// 	if (m_char > NUMBER_OF_CHARACTERISTICS){
+// 		m_char = 0;
+// 	}
+// 	espar_set_characteristic(m_char);
+// 	m_char++;
+// }
 /* Main function */
 int main(void)
 {
 	ret_code_t err_code;
 
+	log_init();
 	leds_init();
 	usb_ser_init(&input_handler);
+	NRF_LOG_INFO("RTT LOG INIT DONE");
 	USB_SER_PRINT("[INFO]: Log init done.\r\n");
 	err_code = nrf_pwr_mgmt_init();
 	APP_ERROR_CHECK(err_code);
@@ -287,10 +321,26 @@ int main(void)
 
 	USB_SER_PRINT("ESPAR DUT device started.\r\n");
 
+	// espar_init();
+	// rx_start();
+	
+	// app_timer_init();
+	// APP_TIMER_DEF(my_timer_id);
+	// err_code = app_timer_create(&my_timer_id,
+        //                         APP_TIMER_MODE_REPEATED,
+        //                         espar_circle);
+
+	// err_code = app_timer_start(my_timer_id, APP_TIMER_TICKS(5000), NULL);
+
+	// static app_button_cfg_t buttons[] = {  {BUTTON_1, false, BUTTON_PULL, espar_circle}};
+	// err_code = app_button_init(buttons, ARRAY_SIZE(buttons), BUTTON_DETECTION_DELAY);
+ 	// err_code = app_button_enable();	
 	// bsp_board_led_on(BSP_BOARD_LED_0);
 
 	// Enter main loop.
 	for (;;) {
+		UNUSED_RETURN_VALUE(NRF_LOG_PROCESS());
 		idle_state_handle();
+		master_handler();
 	}
 }
