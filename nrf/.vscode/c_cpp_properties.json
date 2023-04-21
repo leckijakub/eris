@@ -22,7 +22,8 @@
                 "NRF_SD_BLE_API_VERSION=7",
                 "S340",
                 "SOFTDEVICE_PRESENT",
-                "USE_APP_CONFIG"
+                "USE_APP_CONFIG",
+                "ESPAR_GENETIC"
             ],
             "compilerPath": "/usr/bin/arm-none-eabi-gcc",
             "cStandard": "c17",

@@ -35,4 +35,15 @@
 #define USE_8DIR_CHARACTERISTICS 0
 #endif
 
+#ifndef RNG_ENABLED
+#define RNG_ENABLED 1
+#endif
+
+#ifndef NRFX_RNG_ENABLED
+#define NRFX_RNG_ENABLED 1
+#endif
+
+#ifndef NRF_QUEUE_ENABLED
+#define NRF_QUEUE_ENABLED 1
+#endif
 // </h>

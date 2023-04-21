@@ -75,10 +75,14 @@ SRC_FILES += \
   $(SDK_ROOT)/integration/nrfx/legacy/nrf_drv_power.c \
   $(SDK_ROOT)/components/libraries/bsp/bsp.c \
   $(SDK_ROOT)/components/ble/nrf_ble_scan/nrf_ble_scan.c \
+  $(SDK_ROOT)/integration/nrfx/legacy/nrf_drv_rng.c \
+  $(SDK_ROOT)/components/libraries/queue/nrf_queue.c \
+  $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_rng.c \
   $(PROJ_DIR)/usb_serial.c \
   $(PROJ_DIR)/client.c \
   $(PROJ_DIR)/master.c \
-  $(PROJ_DIR)/driver.espar/espar_driver.c 
+  $(PROJ_DIR)/driver.espar/espar_driver.c \
+  $(PROJ_DIR)/espar_genetic.c
 
 # Include folders common to all targets
 INC_FOLDERS += \
@@ -240,7 +244,8 @@ CFLAGS += -DSOFTDEVICE_PRESENT
 CFLAGS += -DUSE_APP_CONFIG
 CFLAGS += -mcpu=cortex-m4
 CFLAGS += -mthumb -mabi=aapcs
-CFLAGS += -Wall 
+CFLAGS += -Wall
+CFLAGS += -DESPAR_GENETIC
 #-Werror
 CFLAGS += -mfloat-abi=hard -mfpu=fpv4-sp-d16
 # keep every function in a separate section, this allows linker to discard unused ones

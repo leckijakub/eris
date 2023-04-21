@@ -3,6 +3,7 @@
         "files.associations": {
                 "app_usbd.h": "c",
                 "boards.h": "c",
-                "nrf_log_default_backends.h": "c"
+                "nrf_log_default_backends.h": "c",
+                "nrf_drv_rng.h": "c"
         }
 }

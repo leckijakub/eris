@@ -24,19 +24,26 @@ APP_USBD_CDC_ACM_GLOBAL_DEF(m_app_cdc_acm, cdc_acm_user_ev_handler,
 			    CDC_ACM_DATA_EPOUT,
 			    APP_USBD_CDC_COMM_PROTOCOL_AT_V250);
 
-static char m_rx_buffer[READ_SIZE];		/** @brief Used to read through CDC */
-static char m_tx_buffer[WRITE_SIZE];		/** @brief Used to send through CDC */
-static char usb_ser_rx_buffer[512];		/** @brief Used to buffer received data from CDC */
-static char usb_ser_tx_buffer[512];		/** @brief Used to buffer data to send if write function didn' finished */
-static char usb_ser_log_buffer[512];		/** @brief Used to place formatted string using @ref USB_SER_PRINT macro */
-volatile static size_t usb_ser_rx_size = 0;	/** @brief Stores current size of @ref usb_ser_rx_buffer buffer */
-volatile static size_t usb_ser_tx_size = 0;	/** @brief Stores current size of @ref usb_ser_tx_buffer buffer */
-volatile static bool tx_in_progres = false;	/** @brief Indicates if CDC is occupied by write operation */
-volatile static bool usb_ser_opened = false;	/** @brief Indicates if CDC device is ready to be used */
+static char m_rx_buffer[READ_SIZE];  /** @brief Used to read through CDC */
+static char m_tx_buffer[WRITE_SIZE]; /** @brief Used to send through CDC */
+static char
+    usb_ser_rx_buffer[512]; /** @brief Used to buffer received data from CDC */
+static char usb_ser_tx_buffer[512];  /** @brief Used to buffer data to send if
+					write function didn' finished */
+static char usb_ser_log_buffer[512]; /** @brief Used to place formatted string
+					using @ref USB_SER_PRINT macro */
+volatile static size_t usb_ser_rx_size =
+    0; /** @brief Stores current size of @ref usb_ser_rx_buffer buffer */
+volatile static size_t usb_ser_tx_size =
+    0; /** @brief Stores current size of @ref usb_ser_tx_buffer buffer */
+volatile static bool tx_in_progres =
+    false; /** @brief Indicates if CDC is occupied by write operation */
+volatile static bool usb_ser_opened =
+    false; /** @brief Indicates if CDC device is ready to be used */
 
 static void usb_ser_write_directly(char *buf, size_t size)
 {
-	if(size > WRITE_SIZE){
+	if (size > WRITE_SIZE) {
 		return;
 	}
 	memcpy(m_tx_buffer, buf, size);
@@ -96,7 +103,7 @@ static void cdc_acm_user_ev_handler(app_usbd_class_inst_t const *p_inst,
 		ret_code_t ret = app_usbd_cdc_acm_read(&m_app_cdc_acm,
 						       m_rx_buffer, READ_SIZE);
 		UNUSED_VARIABLE(ret);
-
+		NRF_LOG_INFO("ACM PORT OPENED\r\n");
 		break;
 	}
 	case APP_USBD_CDC_ACM_USER_EVT_PORT_CLOSE:
@@ -140,19 +147,23 @@ static void usbd_user_ev_handler(app_usbd_event_type_t event)
 	case APP_USBD_EVT_DRV_RESUME:
 		break;
 	case APP_USBD_EVT_STARTED:
+		NRF_LOG_INFO("USBD EVT STARTED\r\n");
 		break;
 	case APP_USBD_EVT_STOPPED:
 		app_usbd_disable();
 		break;
 	case APP_USBD_EVT_POWER_DETECTED:
 		if (!nrf_drv_usbd_is_enabled()) {
+			NRF_LOG_INFO("USB POWER DETECTED\r\n");
 			app_usbd_enable();
 		}
 		break;
 	case APP_USBD_EVT_POWER_REMOVED:
+		NRF_LOG_INFO("USB POWER REMOVED\r\n");
 		app_usbd_stop();
 		break;
 	case APP_USBD_EVT_POWER_READY:
+		NRF_LOG_INFO("USBD EVT POWER READY\r\n");
 		app_usbd_start();
 		break;
 	default:
@@ -169,16 +180,19 @@ void usb_ser_init(void(*input_handler))
 
 	ret = app_usbd_init(&usbd_config);
 	APP_ERROR_CHECK(ret);
+	NRF_LOG_INFO("USBD init done\r\n");
 
 	app_usbd_class_inst_t const *class_cdc_acm =
 	    app_usbd_cdc_acm_class_inst_get(&m_app_cdc_acm);
 	ret = app_usbd_class_append(class_cdc_acm);
 	APP_ERROR_CHECK(ret);
+	NRF_LOG_INFO("USBD ACM init done\r\n");
 
 	usb_ser_input_parser = input_handler;
 	app_usbd_enable();
+	NRF_LOG_INFO("USBD Enabled\r\n");
 	app_usbd_start();
-
+	NRF_LOG_INFO("USBD Started\r\n");
 }
 
 char *usb_ser_log_get_txbuf() { return usb_ser_log_buffer; }

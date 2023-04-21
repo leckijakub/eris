@@ -17,6 +17,7 @@
 #include "usb_serial.h"
 #include "client.h"
 #include "master.h"
+#include "nrf_drv_rng.h"
 
 #define TX_LED BSP_BOARD_LED_2
 #define JAMMER_LED BSP_BOARD_LED_3
@@ -317,8 +318,12 @@ int main(void)
 	err_code = nrf_pwr_mgmt_init();
 	APP_ERROR_CHECK(err_code);
 	client_init();
+	NRF_LOG_INFO("CLIENT INIT DONE");
+	nrf_drv_rng_init(NULL);
+	NRF_LOG_INFO("RNG INIT DONE");
 	master_init();
 
+	
 	USB_SER_PRINT("ESPAR DUT device started.\r\n");
 
 	// espar_init();
@@ -335,7 +340,7 @@ int main(void)
 	// static app_button_cfg_t buttons[] = {  {BUTTON_1, false, BUTTON_PULL, espar_circle}};
 	// err_code = app_button_init(buttons, ARRAY_SIZE(buttons), BUTTON_DETECTION_DELAY);
  	// err_code = app_button_enable();	
-	// bsp_board_led_on(BSP_BOARD_LED_0);
+	bsp_board_led_on(BSP_BOARD_LED_0);
 
 	// Enter main loop.
 	for (;;) {
