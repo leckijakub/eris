@@ -78,9 +78,13 @@ SRC_FILES += \
   $(SDK_ROOT)/integration/nrfx/legacy/nrf_drv_rng.c \
   $(SDK_ROOT)/components/libraries/queue/nrf_queue.c \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_rng.c \
+  $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_timer.c \
+  $(SDK_ROOT)/components/drivers_nrf/radio_config/radio_config.c \
+  $(PROJ_DIR)/radio.c \
   $(PROJ_DIR)/usb_serial.c \
   $(PROJ_DIR)/client.c \
   $(PROJ_DIR)/master.c \
+  $(PROJ_DIR)/jammer.c \
   $(PROJ_DIR)/driver.espar/espar_driver.c \
   $(PROJ_DIR)/espar_genetic.c
 
@@ -218,6 +222,7 @@ INC_FOLDERS += \
   $(SDK_ROOT)/components/libraries/usbd \
   $(SDK_ROOT)/components/libraries/usbd/class/cdc/acm \
   $(SDK_ROOT)/components/libraries/bsp \
+  $(SDK_ROOT)/components/drivers_nrf/radio_config \
   $(PROJ_DIR) \
   $(PROJ_DIR)/driver.espar \
 
@@ -233,8 +238,7 @@ OPT = -O3 -g3
 CFLAGS += $(OPT)
 CFLAGS += -DAPP_TIMER_V2
 CFLAGS += -DAPP_TIMER_V2_RTC1_ENABLED
-CFLAGS += -DBOARD_DD#BOARD_PCA10059
-CFLAGS += -DBOARD_CUSTOM
+CFLAGS += $(BUILD_DEFINES)
 CFLAGS += -DCONFIG_GPIO_AS_PINRESET
 CFLAGS += -DFLOAT_ABI_HARD
 CFLAGS += -DNRF52840_XXAA
@@ -245,7 +249,7 @@ CFLAGS += -DUSE_APP_CONFIG
 CFLAGS += -mcpu=cortex-m4
 CFLAGS += -mthumb -mabi=aapcs
 CFLAGS += -Wall
-CFLAGS += -DESPAR_GENETIC
+# CFLAGS += -DESPAR_GENETIC
 #-Werror
 CFLAGS += -mfloat-abi=hard -mfpu=fpv4-sp-d16
 # keep every function in a separate section, this allows linker to discard unused ones
@@ -261,7 +265,7 @@ ASMFLAGS += -mthumb -mabi=aapcs
 ASMFLAGS += -mfloat-abi=hard -mfpu=fpv4-sp-d16
 ASMFLAGS += -DAPP_TIMER_V2
 ASMFLAGS += -DAPP_TIMER_V2_RTC1_ENABLED
-ASMFLAGS += -DBOARD_DD#BOARD_PCA10059
+ASMFLAGS += $(BUILD_DEFINES)
 ASMFLAGS += -DCONFIG_GPIO_AS_PINRESET
 ASMFLAGS += -DFLOAT_ABI_HARD
 ASMFLAGS += -DNRF52840_XXAA

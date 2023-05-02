@@ -206,7 +206,6 @@ void espar_get_update_fitness_from_store(struct espar_gen_ctx *ctx)
 void espar_gen_next_generation(struct espar_gen_ctx *ctx)
 {
 	NRF_LOG_INFO("CREATING NEW GENERATION");
-	NRF_LOG_INFO("Genome 2 fitness: %d", ctx->population[2].fitness);
 	// NRF_LOG_RAW_INFO
 	// Sort the new population by fitness in descending order
 	espar_get_update_fitness_from_store(ctx);

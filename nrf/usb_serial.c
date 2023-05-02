@@ -180,7 +180,7 @@ void usb_ser_init(void(*input_handler))
 
 	ret = app_usbd_init(&usbd_config);
 	APP_ERROR_CHECK(ret);
-	NRF_LOG_INFO("USBD init done\r\n");
+	NRF_LOG_INFO("USBD init done");
 
 	app_usbd_class_inst_t const *class_cdc_acm =
 	    app_usbd_cdc_acm_class_inst_get(&m_app_cdc_acm);

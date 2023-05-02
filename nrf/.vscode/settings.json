@@ -4,6 +4,11 @@
                 "app_usbd.h": "c",
                 "boards.h": "c",
                 "nrf_log_default_backends.h": "c",
-                "nrf_drv_rng.h": "c"
+                "nrf_drv_rng.h": "c",
+                "radio_config.h": "c",
+                "radio.h": "c",
+                "string.h": "c",
+                "espar_driver.h": "c",
+                "nrf_drv_clock.h": "c"
         }
 }

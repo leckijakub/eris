@@ -13,56 +13,49 @@
 #include "nrf_log_ctrl.h"
 #include "nrf_log_default_backends.h"
 
-#include "nrf_delay.h"
-#include "usb_serial.h"
+#include "app_timer.h"
 #include "client.h"
+#include "jammer.h"
 #include "master.h"
+#include "nrf_delay.h"
 #include "nrf_drv_rng.h"
+#include "radio.h"
+#include "usb_serial.h"
+#include "nrf_drv_clock.h"
 
+#ifndef BOARD_PCA10059
+#include "espar_driver.h"
+#include "nrf_log.h"
+#include "nrf_log_ctrl.h"
+#include "nrf_log_default_backends.h"
+
+
+#endif
 #define TX_LED BSP_BOARD_LED_2
 #define JAMMER_LED BSP_BOARD_LED_3
 #define RX_LED BSP_BOARD_LED_0
 
-enum dut_state { DUT_STATE_JAMMING, DUT_STATE_TX, DUT_STATE_RX, DUT_STATE_IDLE };
+enum dut_state {
+	DUT_STATE_JAMMING,
+	DUT_STATE_TX,
+	DUT_STATE_RX,
+	DUT_STATE_IDLE
+};
 enum dut_state present_state = DUT_STATE_IDLE;
 
 /**@brief Initialize application.
  */
-int jammer_start(uint8_t power_level)
+int jam_start(uint8_t power_level)
 {
-	if (power_level < 0 || power_level > 5) {
-		USB_SER_PRINT("Invalid power level passed.\r\n");
-		return 0;
-	}
-	uint32_t err_code = sd_ant_cw_test_mode_init();
-	APP_ERROR_CHECK(err_code);
-
-	// sd_ant_cw_test_mode assumes that the hfclck is enabled.
-	// Request and wait for it to be ready.
-	err_code = sd_clock_hfclk_request();
-	APP_ERROR_CHECK(err_code);
-	nrf_delay_ms(2);
-	uint32_t hfclk_is_running = 0;
-
-	while (!hfclk_is_running) {
-		APP_ERROR_CHECK(sd_clock_hfclk_is_running(&hfclk_is_running));
-	}
-
-	err_code = sd_ant_cw_test_mode(02, power_level, 0, 1);
-	APP_ERROR_CHECK(err_code);
-
+	jammer_start(power_level);
 	bsp_board_led_on(JAMMER_LED);
 	USB_SER_PRINT("Jamming started, Power: %d\r\n", power_level);
-
 	return 1;
 }
 
-int jammer_stop()
+int jam_stop()
 {
-	if (sd_ant_stack_reset() == NRF_ERROR_TIMEOUT) {
-		USB_SER_PRINT("Failed to stop jamming\r\n");
-		return 0;
-	}
+	jammer_stop();
 	bsp_board_led_off(JAMMER_LED);
 	USB_SER_PRINT("Jamming stopped\r\n");
 	return 0;
@@ -84,10 +77,10 @@ int tx_stop()
 	return 0;
 }
 
-
 int rx_start()
 {
-	scan_start();
+	// scan_start();
+	master_start();
 	USB_SER_PRINT("RX started\r\n");
 	bsp_board_led_on(RX_LED);
 	return 0;
@@ -95,24 +88,11 @@ int rx_start()
 
 int rx_stop()
 {
-	scan_stop();
+	// scan_stop();
+	master_stop();
 	USB_SER_PRINT("RX stopped\r\n");
 	bsp_board_led_off(RX_LED);
 	return 0;
-}
-
-
-
-/**@brief Function for handling the idle state (main loop).
- *
- * @details If there is no pending log operation, then sleep until next the next
- * event occurs.
- */
-static void idle_state_handle(void)
-{
-	if (usb_ser_events_process() == false) {
-		nrf_pwr_mgmt_run();
-	}
 }
 
 static void leds_init(void) { bsp_board_init(BSP_INIT_LEDS); }
@@ -171,7 +151,7 @@ int dut_set_state(enum dut_state state, int power_level)
 	if (present_state != DUT_STATE_IDLE) {
 		switch (present_state) {
 		case DUT_STATE_JAMMING:
-			jammer_stop();
+			jam_stop();
 			break;
 		case DUT_STATE_TX:
 			tx_stop();
@@ -188,7 +168,7 @@ int dut_set_state(enum dut_state state, int power_level)
 	/* set requested state */
 	switch (state) {
 	case DUT_STATE_JAMMING:
-		if (!jammer_start(power_level)) {
+		if (!jam_start(power_level)) {
 			return 0;
 		}
 		break;
@@ -216,7 +196,7 @@ void input_handler(char *input_buff, size_t input_size)
 
 	// echo input back to console
 	USB_SER_PRINT("%.*s", input_size, input_buff);
-	if(cmd_buf_size + input_size >= 128){
+	if (cmd_buf_size + input_size >= 128) {
 		USB_SER_PRINT("\r\nCMD buffer exceeded\r\n");
 		goto cmd_exit;
 	}
@@ -273,42 +253,49 @@ void input_handler(char *input_buff, size_t input_size)
 	}
 }
 
-#include "nrf_log.h"
-#include "nrf_log_ctrl.h"
-#include "nrf_log_default_backends.h"
-#include "nrf_delay.h"
-#include "app_timer.h"
-#include "espar_driver.h"
-
 static void log_init(void)
 {
-    ret_code_t err_code = NRF_LOG_INIT(app_timer_cnt_get);
-    APP_ERROR_CHECK(err_code);
+	ret_code_t err_code = NRF_LOG_INIT(app_timer_cnt_get);
+	APP_ERROR_CHECK(err_code);
 
-    NRF_LOG_DEFAULT_BACKENDS_INIT();
+	NRF_LOG_DEFAULT_BACKENDS_INIT();
 }
-#include "app_button.h"
-#define BUTTON_DETECTION_DELAY          APP_TIMER_TICKS(50)  
 
-uint8_t m_char = 0;
+/**@brief Function for initialization oscillators.
+ */
+void clock_initialization()
+{
+	/* Start 16 MHz crystal oscillator */
+	NRF_CLOCK->EVENTS_HFCLKSTARTED = 0;
+	NRF_CLOCK->TASKS_HFCLKSTART = 1;
 
-// static void espar_circle(void * p_context){
-// // static void espar_circle(uint8_t pin_no, uint8_t button_action){
-// // 	if(button_action != APP_BUTTON_PUSH)
-// // 	{
-// // 		return;
-// // 	}
-// // 	NRF_LOG_INFO("BUTTON PUSHED");
-// 	if (m_char > NUMBER_OF_CHARACTERISTICS){
-// 		m_char = 0;
-// 	}
-// 	espar_set_characteristic(m_char);
-// 	m_char++;
-// }
-/* Main function */
+	/* Wait for the external oscillator to start up */
+	while (NRF_CLOCK->EVENTS_HFCLKSTARTED == 0) {
+		// Do nothing.
+	}
+
+	/* Start low frequency crystal oscillator for app_timer(used by bsp)*/
+	NRF_CLOCK->LFCLKSRC =
+	    (CLOCK_LFCLKSRC_SRC_Xtal << CLOCK_LFCLKSRC_SRC_Pos);
+	NRF_CLOCK->EVENTS_LFCLKSTARTED = 0;
+	NRF_CLOCK->TASKS_LFCLKSTART = 1;
+
+	while (NRF_CLOCK->EVENTS_LFCLKSTARTED == 0) {
+		// Do nothing.
+	}
+}
+
+/**
+ * @brief Function for application main entry.
+ * @return 0. int return type required by ANSI/ISO standard.
+ */
 int main(void)
 {
-	ret_code_t err_code;
+	uint32_t err_code = NRF_SUCCESS;
+
+	clock_initialization();
+	err_code = app_timer_init();
+	APP_ERROR_CHECK(err_code);
 
 	log_init();
 	leds_init();
@@ -317,35 +304,23 @@ int main(void)
 	USB_SER_PRINT("[INFO]: Log init done.\r\n");
 	err_code = nrf_pwr_mgmt_init();
 	APP_ERROR_CHECK(err_code);
+
+
+	master_init();
+	NRF_LOG_INFO("MASTER INIT DONE");
 	client_init();
 	NRF_LOG_INFO("CLIENT INIT DONE");
-	nrf_drv_rng_init(NULL);
-	NRF_LOG_INFO("RNG INIT DONE");
-	master_init();
-
-	
-	USB_SER_PRINT("ESPAR DUT device started.\r\n");
-
-	// espar_init();
-	// rx_start();
-	
-	// app_timer_init();
-	// APP_TIMER_DEF(my_timer_id);
-	// err_code = app_timer_create(&my_timer_id,
-        //                         APP_TIMER_MODE_REPEATED,
-        //                         espar_circle);
-
-	// err_code = app_timer_start(my_timer_id, APP_TIMER_TICKS(5000), NULL);
-
-	// static app_button_cfg_t buttons[] = {  {BUTTON_1, false, BUTTON_PULL, espar_circle}};
-	// err_code = app_button_init(buttons, ARRAY_SIZE(buttons), BUTTON_DETECTION_DELAY);
- 	// err_code = app_button_enable();	
-	bsp_board_led_on(BSP_BOARD_LED_0);
-
-	// Enter main loop.
-	for (;;) {
+	jammer_init();
+	NRF_LOG_INFO("JAMMER INIT DONE");
+#ifdef BOARD_DD
+	master_start();
+#endif
+	NRF_LOG_FLUSH();
+	while (true) {
 		UNUSED_RETURN_VALUE(NRF_LOG_PROCESS());
-		idle_state_handle();
+		usb_ser_events_process();
 		master_handler();
+		client_handler();
+		jammer_handler();
 	}
 }
