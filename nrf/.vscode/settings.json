@@ -9,6 +9,7 @@
                 "radio.h": "c",
                 "string.h": "c",
                 "espar_driver.h": "c",
-                "nrf_drv_clock.h": "c"
+                "nrf_drv_clock.h": "c",
+                "stdint.h": "c"
         }
 }

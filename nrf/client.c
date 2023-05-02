@@ -30,6 +30,7 @@
 #include "usb_serial.h"
 
 static bool client_enabled = false;
+static uint32_t packet;
 
 void client_init(void)
 {
@@ -39,6 +40,7 @@ void client_init(void)
 
 void client_start(void)
 {
+	packet = 1;
 	client_enabled = true;
 	//
 }
@@ -46,7 +48,6 @@ void client_stop(void) { client_enabled = false; }
 
 void client_handler()
 {
-	static uint32_t packet = 0;
 	if (!client_enabled)
 		return;
 	send_packet(packet);

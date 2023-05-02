@@ -8,12 +8,12 @@
 // #include "nrf_log_ctrl.h"
 // #include "nrf_log_default_backends.h"
 #include "nrf.h"
-#include "nrf_sdh.h"
-#include "nrf_sdh_ble.h"
-#include "nrf_sdh_soc.h"
 #include "nrf_log.h"
 #include "nrf_log_ctrl.h"
 #include "nrf_log_default_backends.h"
+#include "nrf_sdh.h"
+#include "nrf_sdh_ble.h"
+#include "nrf_sdh_soc.h"
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
@@ -31,7 +31,6 @@ bool espar_run = false;
 #ifdef ESPAR_GENETIC
 struct espar_gen_ctx eg_ctx;
 #endif
-
 
 void espar_start()
 {
@@ -87,29 +86,46 @@ void record_char_rssi(uint16_t espar_char, int8_t rssi)
 
 bool espar_finish() { return false; }
 
+uint32_t last_packet_number = 0;
+uint32_t packets_received = 0;
+
 void master_handler(void)
 {
 	uint32_t received = 0;
-	if (!master_enabled){
+	if (!master_enabled) {
 		return;
 	}
 	received = read_packet();
+	if (!received) {
+		// NRF_LOG_INFO("Invalid packet received")
+		// NRF_LOG_FLUSH();
+		return;
+	}
 
-	NRF_LOG_INFO("Packet was received");
+	packets_received++;
+	if (received < last_packet_number) {
+		/* if received smaller valua than last time, then asume new
+		 * package set is started */
+		packets_received = 1;
+	}
+	last_packet_number = received;
 
-	NRF_LOG_INFO("The contents of the package is %u",
-		     (unsigned int)received);
+	NRF_LOG_INFO(
+	    "PR: %u, LP: %u,  PER: " NRF_LOG_FLOAT_MARKER, packets_received,
+	    last_packet_number,
+	    NRF_LOG_FLOAT((double)(last_packet_number - packets_received) /
+			  last_packet_number));
 	NRF_LOG_FLUSH();
-	// set_char(0xffff);
 }
 
-void master_start(){
+void master_start()
+{
+	last_packet_number = 0;
+	packets_received = 0;
 	master_enabled = true;
 }
 
-void master_stop(){
-	master_enabled = false;
-}
+void master_stop() { master_enabled = false; }
 
 void master_init()
 {
