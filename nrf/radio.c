@@ -22,7 +22,7 @@
 					     given channel in the IEEE         \
 					     802.15.4 radio mode. */
 
-static uint32_t packet; /**< Packet to transmit. */
+static uint32_t packet = 0xffffffff; /**< Packet to transmit. */
 static bool radio_configured = false;
 
 /**@brief Function for disabling radio.

@@ -6,63 +6,64 @@
 /* Array of all characteristics. */
 #if (ESPAR_STANDARD_V1) | (ESPAR_STANDARD_V2)
 static characteristic characteristics[NUMBER_OF_CHARACTERISTICS] = {
+
 #if USE_3DIR_CHARACTERISTICS
-    {D, D, D, R, R, R, R, R, R, R, R, R}, // Characteristic  1
-    {R, D, D, D, R, R, R, R, R, R, R, R}, // Characteristic  2
-    {R, R, D, D, D, R, R, R, R, R, R, R}, // Characteristic  3
-    {R, R, R, D, D, D, R, R, R, R, R, R}, // Characteristic  4
-    {R, R, R, R, D, D, D, R, R, R, R, R}, // Characteristic  5
-    {R, R, R, R, R, D, D, D, R, R, R, R}, // Characteristic  6
-    {R, R, R, R, R, R, D, D, D, R, R, R}, // Characteristic  7
-    {R, R, R, R, R, R, R, D, D, D, R, R}, // Characteristic  8
-    {R, R, R, R, R, R, R, R, D, D, D, R}, // Characteristic  9
-    {R, R, R, R, R, R, R, R, R, D, D, D}, // Characteristic 10
-    {D, R, R, R, R, R, R, R, R, R, D, D}, // Characteristic 11
-    {D, D, R, R, R, R, R, R, R, R, R, D}, // Characteristic 12
+    {{D, D, D, R, R, R, R, R, R, R, R, R}}, // Characteristic  1
+    {{R, D, D, D, R, R, R, R, R, R, R, R}}, // Characteristic  2
+    {{R, R, D, D, D, R, R, R, R, R, R, R}}, // Characteristic  3
+    {{R, R, R, D, D, D, R, R, R, R, R, R}}, // Characteristic  4
+    {{R, R, R, R, D, D, D, R, R, R, R, R}}, // Characteristic  5
+    {{R, R, R, R, R, D, D, D, R, R, R, R}}, // Characteristic  6
+    {{R, R, R, R, R, R, D, D, D, R, R, R}}, // Characteristic  7
+    {{R, R, R, R, R, R, R, D, D, D, R, R}}, // Characteristic  8
+    {{R, R, R, R, R, R, R, R, D, D, D, R}}, // Characteristic  9
+    {{R, R, R, R, R, R, R, R, R, D, D, D}}, // Characteristic 10
+    {{D, R, R, R, R, R, R, R, R, R, D, D}}, // Characteristic 11
+    {{D, D, R, R, R, R, R, R, R, R, R, D}}, // Characteristic 12
 #endif					  /* USE_3DIR_CHARACTERISTICS */
 #if USE_5DIR_CHARACTERISTICS
-    {D, D, D, D, D, R, R, R, R, R, R, R}, // Characteristic  1
-    {R, D, D, D, D, D, R, R, R, R, R, R}, // Characteristic  2
-    {R, R, D, D, D, D, D, R, R, R, R, R}, // Characteristic  3
-    {R, R, R, D, D, D, D, D, R, R, R, R}, // Characteristic  4
-    {R, R, R, R, D, D, D, D, D, R, R, R}, // Characteristic  5
-    {R, R, R, R, R, D, D, D, D, D, R, R}, // Characteristic  6
-    {R, R, R, R, R, R, D, D, D, D, D, R}, // Characteristic  7
-    {R, R, R, R, R, R, R, D, D, D, D, D}, // Characteristic  8
-    {D, R, R, R, R, R, R, R, D, D, D, D}, // Characteristic  9
-    {D, D, R, R, R, R, R, R, R, D, D, D}, // Characteristic 10
-    {D, D, D, R, R, R, R, R, R, R, D, D}, // Characteristic 11
-    {D, D, D, D, R, R, R, R, R, R, R, D}, // Characteristic 12
+    {{D, D, D, D, D, R, R, R, R, R, R, R}}, // Characteristic  1
+    {{R, D, D, D, D, D, R, R, R, R, R, R}}, // Characteristic  2
+    {{R, R, D, D, D, D, D, R, R, R, R, R}}, // Characteristic  3
+    {{R, R, R, D, D, D, D, D, R, R, R, R}}, // Characteristic  4
+    {{R, R, R, R, D, D, D, D, D, R, R, R}}, // Characteristic  5
+    {{R, R, R, R, R, D, D, D, D, D, R, R}}, // Characteristic  6
+    {{R, R, R, R, R, R, D, D, D, D, D, R}}, // Characteristic  7
+    {{R, R, R, R, R, R, R, D, D, D, D, D}}, // Characteristic  8
+    {{D, R, R, R, R, R, R, R, D, D, D, D}}, // Characteristic  9
+    {{D, D, R, R, R, R, R, R, R, D, D, D}}, // Characteristic 10
+    {{D, D, D, R, R, R, R, R, R, R, D, D}}, // Characteristic 11
+    {{D, D, D, D, R, R, R, R, R, R, R, D}}, // Characteristic 12
 #endif					  /* USE_5DIR_CHARACTERISTICS */
 #if USE_8DIR_CHARACTERISTICS
-    {D, D, D, D, D, D, D, D, R, R, R, R}, // Characteristic  1
-    {R, D, D, D, D, D, D, D, D, R, R, R}, // Characteristic  2
-    {R, R, D, D, D, D, D, D, D, D, R, R}, // Characteristic  3
-    {R, R, R, D, D, D, D, D, D, D, D, R}, // Characteristic  4
-    {R, R, R, R, D, D, D, D, D, D, D, D}, // Characteristic  5
-    {D, R, R, R, R, D, D, D, D, D, D, D}, // Characteristic  6
-    {D, D, R, R, R, R, D, D, D, D, D, D}, // Characteristic  7
-    {D, D, D, R, R, R, R, D, D, D, D, D}, // Characteristic  8
-    {D, D, D, D, R, R, R, R, D, D, D, D}, // Characteristic  9
-    {D, D, D, D, D, R, R, R, R, D, D, D}, // Characteristic 10
-    {D, D, D, D, D, D, R, R, R, R, D, D}, // Characteristic 11
-    {D, D, D, D, D, D, D, R, R, R, R, D}, // Characteristic 12
+    {{D, D, D, D, D, D, D, D, R, R, R, R}}, // Characteristic  1
+    {{R, D, D, D, D, D, D, D, D, R, R, R}}, // Characteristic  2
+    {{R, R, D, D, D, D, D, D, D, D, R, R}}, // Characteristic  3
+    {{R, R, R, D, D, D, D, D, D, D, D, R}}, // Characteristic  4
+    {{R, R, R, R, D, D, D, D, D, D, D, D}}, // Characteristic  5
+    {{D, R, R, R, R, D, D, D, D, D, D, D}}, // Characteristic  6
+    {{D, D, R, R, R, R, D, D, D, D, D, D}}, // Characteristic  7
+    {{D, D, D, R, R, R, R, D, D, D, D, D}}, // Characteristic  8
+    {{D, D, D, D, R, R, R, R, D, D, D, D}}, // Characteristic  9
+    {{D, D, D, D, D, R, R, R, R, D, D, D}}, // Characteristic 10
+    {{D, D, D, D, D, D, R, R, R, R, D, D}}, // Characteristic 11
+    {{D, D, D, D, D, D, D, R, R, R, R, D}}, // Characteristic 12
 #endif					  /* USE_8DIR_CHARACTERISTICS */
 };
 #elif (ESPAR_DUAL_PASSIVE)
 static characteristic characteristics[NUMBER_OF_CHARACTERISTICS] = {
-    {D, R, R, R, R, R, D, D, R, D, R, D}, // Characteristic  1
-    {R, D, R, R, R, R, D, D, D, R, D, R}, // Characteristic  2
-    {R, R, D, R, R, R, R, D, D, D, R, D}, // Characteristic  3
-    {R, R, R, D, R, R, D, R, D, D, D, R}, // Characteristic  4
-    {R, R, R, R, D, R, R, D, R, D, D, D}, // Characteristic  5
-    {R, R, R, R, R, D, D, R, D, R, D, D}, // Characteristic  6
-    {D, D, R, R, R, D, R, R, R, D, R, R}, // Characteristic  7
-    {D, D, D, R, R, R, R, R, R, R, D, R}, // Characteristic  8
-    {R, D, D, D, R, R, R, R, R, R, R, D}, // Characteristic  9
-    {R, R, D, D, D, R, D, R, R, R, R, R}, // Characteristic 10
-    {R, R, R, D, D, D, R, D, R, R, R, R}, // Characteristic 11
-    {D, R, R, R, D, D, R, R, D, R, R, R}, // Characteristic 12
+    {{D, R, R, R, R, R, D, D, R, D, R, D}}, // Characteristic  1
+    {{R, D, R, R, R, R, D, D, D, R, D, R}}, // Characteristic  2
+    {{R, R, D, R, R, R, R, D, D, D, R, D}}, // Characteristic  3
+    {{R, R, R, D, R, R, D, R, D, D, D, R}}, // Characteristic  4
+    {{R, R, R, R, D, R, R, D, R, D, D, D}}, // Characteristic  5
+    {{R, R, R, R, R, D, D, R, D, R, D, D}}, // Characteristic  6
+    {{D, D, R, R, R, D, R, R, R, D, R, R}}, // Characteristic  7
+    {{D, D, D, R, R, R, R, R, R, R, D, R}}, // Characteristic  8
+    {{R, D, D, D, R, R, R, R, R, R, R, D}}, // Characteristic  9
+    {{R, R, D, D, D, R, D, R, R, R, R, R}}, // Characteristic 10
+    {{R, R, R, D, D, D, R, D, R, R, R, R}}, // Characteristic 11
+    {{D, R, R, R, D, D, R, R, D, R, R, R}}, // Characteristic 12
 };
 #endif
 

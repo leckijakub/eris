@@ -10,6 +10,8 @@
                 "string.h": "c",
                 "espar_driver.h": "c",
                 "nrf_drv_clock.h": "c",
-                "stdint.h": "c"
+                "stdint.h": "c",
+                "fds.h": "c",
+                "jammer.h": "c"
         }
 }

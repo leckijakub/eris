@@ -101,7 +101,10 @@ void master_handler(void)
 		// NRF_LOG_FLUSH();
 		return;
 	}
-
+	/* discard the value of jammer packets */
+	if (received == 0xffffffff){
+		return;
+	}
 	packets_received++;
 	if (received < last_packet_number) {
 		/* if received smaller valua than last time, then asume new
