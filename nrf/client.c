@@ -38,12 +38,18 @@ void client_init(void)
 	//
 }
 
-void client_start(void)
+int client_start(uint8_t power_level)
 {
+	if (!radio_power_level_valid(power_level)) {
+		USB_SER_PRINT("Invalid power level\r\n");
+		return 0;
+	}
+	NRF_RADIO->TXPOWER = (power_level << RADIO_TXPOWER_TXPOWER_Pos);
 	packet = 1;
 	client_enabled = true;
-	//
+	return 1;
 }
+
 void client_stop(void) { client_enabled = false; }
 
 void client_handler()

@@ -1,6 +1,18 @@
-sd_version = s340
-sd_hex_file = ANT_s340_nrf52840_6.1.1.hex
-sd_id = 0xB9
-usb_path = /dev/ttyACM0
+build_espar:
+	$(MAKE) -C pca10056/armgcc
 
-include ./common/nrf.mk
+build_dongle:
+	$(MAKE) -C pca10059/armgcc
+	nrfutil pkg generate --hw-version 52 \
+		--sd-req 0x0 \
+		--debug-mode \
+		--application pca10059/armgcc/_build/nrf52840_xxaa.hex \
+		pca10059/armgcc/_build/dfu.zip
+
+clean_espar:
+	$(MAKE) clean -C pca10056/armgcc
+
+clean_dongle:
+	$(MAKE) clean -C pca10059/armgcc
+
+clean: clean_espar clean_dongle

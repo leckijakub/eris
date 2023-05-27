@@ -3,6 +3,7 @@
 
 #include "stdbool.h"
 #include "string.h"
+#include <stdio.h>
 
 
 #ifndef USBD_POWER_DETECTION

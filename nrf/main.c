@@ -47,7 +47,9 @@ enum dut_state present_state = DUT_STATE_IDLE;
  */
 int jam_start(uint8_t power_level)
 {
-	jammer_start(power_level);
+	if(!jammer_start(power_level)){
+		return 0;
+	}
 	bsp_board_led_on(JAMMER_LED);
 	USB_SER_PRINT("Jamming started, Power: %d\r\n", power_level);
 	return 1;
@@ -58,15 +60,17 @@ int jam_stop()
 	jammer_stop();
 	bsp_board_led_off(JAMMER_LED);
 	USB_SER_PRINT("Jamming stopped\r\n");
-	return 0;
+	return 1;
 }
 
-int tx_start()
+int tx_start(uint8_t power_level)
 {
-	client_start();
+	if(!client_start(power_level)){
+		return 0;
+	}
 	USB_SER_PRINT("TX started\r\n");
 	bsp_board_led_on(TX_LED);
-	return 0;
+	return 1;
 }
 
 int tx_stop()
@@ -74,7 +78,7 @@ int tx_stop()
 	client_stop();
 	USB_SER_PRINT("TX stopped\r\n");
 	bsp_board_led_off(TX_LED);
-	return 0;
+	return 1;
 }
 
 int rx_start()
@@ -83,7 +87,7 @@ int rx_start()
 	master_start();
 	USB_SER_PRINT("RX started\r\n");
 	bsp_board_led_on(RX_LED);
-	return 0;
+	return 1;
 }
 
 int rx_stop()
@@ -92,7 +96,7 @@ int rx_stop()
 	master_stop();
 	USB_SER_PRINT("RX stopped\r\n");
 	bsp_board_led_off(RX_LED);
-	return 0;
+	return 1;
 }
 
 static void leds_init(void) { bsp_board_init(BSP_INIT_LEDS); }
@@ -173,7 +177,9 @@ int dut_set_state(enum dut_state state, int power_level)
 		}
 		break;
 	case DUT_STATE_TX:
-		tx_start();
+		if (!tx_start(power_level)){
+			return 0;
+		}
 		break;
 	case DUT_STATE_RX:
 		rx_start();
@@ -314,6 +320,8 @@ int main(void)
 	NRF_LOG_INFO("JAMMER INIT DONE");
 #ifdef BOARD_DD
 	master_start();
+#else
+	// jam_start(0);
 #endif
 	NRF_LOG_FLUSH();
 	while (true) {

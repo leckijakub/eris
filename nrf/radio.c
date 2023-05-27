@@ -122,6 +122,27 @@ static void radio_channel_set(uint8_t channel)
 	NRF_RADIO->FREQUENCY = channel;
 }
 
+bool radio_power_level_valid(uint8_t power)
+{
+	if (power == RADIO_TXPOWER_TXPOWER_0dBm     ||
+	    power == RADIO_TXPOWER_TXPOWER_Pos2dBm  ||
+	    power == RADIO_TXPOWER_TXPOWER_Pos3dBm  ||
+	    power == RADIO_TXPOWER_TXPOWER_Pos4dBm  ||
+	    power == RADIO_TXPOWER_TXPOWER_Pos5dBm  ||
+	    power == RADIO_TXPOWER_TXPOWER_Pos6dBm  ||
+	    power == RADIO_TXPOWER_TXPOWER_Pos7dBm  ||
+	    power == RADIO_TXPOWER_TXPOWER_Pos8dBm  ||
+	    power == RADIO_TXPOWER_TXPOWER_Neg40dBm ||
+	    power == RADIO_TXPOWER_TXPOWER_Neg30dBm ||
+	    power == RADIO_TXPOWER_TXPOWER_Neg20dBm ||
+	    power == RADIO_TXPOWER_TXPOWER_Neg16dBm ||
+	    power == RADIO_TXPOWER_TXPOWER_Neg12dBm ||
+	    power == RADIO_TXPOWER_TXPOWER_Neg8dBm  ||
+	    power == RADIO_TXPOWER_TXPOWER_Neg4dBm)
+	    return true;
+	return false;
+}
+
 void radio_unmodulated_tx_carrier(uint8_t txpower, uint8_t channel)
 {
 	radio_disable();
@@ -140,11 +161,11 @@ void radio_init()
 	// Set radio configuration parameters
 	radio_configure();
 	NRF_RADIO->PACKETPTR = (uint32_t)&packet;
-	NRF_RADIO->PCNF1 = (RADIO_PCNF1_WHITEEN_Disabled << RADIO_PCNF1_WHITEEN_Pos) |
-                       (RADIO_PCNF1_ENDIAN_Big       << RADIO_PCNF1_ENDIAN_Pos)  |
-                       (PACKET_BASE_ADDRESS_LENGTH   << RADIO_PCNF1_BALEN_Pos)   |
-                       (4         << RADIO_PCNF1_STATLEN_Pos) |
-                       (4       << RADIO_PCNF1_MAXLEN_Pos);
+	NRF_RADIO->PCNF1 =
+	    (RADIO_PCNF1_WHITEEN_Disabled << RADIO_PCNF1_WHITEEN_Pos) |
+	    (RADIO_PCNF1_ENDIAN_Big << RADIO_PCNF1_ENDIAN_Pos) |
+	    (PACKET_BASE_ADDRESS_LENGTH << RADIO_PCNF1_BALEN_Pos) |
+	    (4 << RADIO_PCNF1_STATLEN_Pos) | (4 << RADIO_PCNF1_MAXLEN_Pos);
 
 	NRF_RADIO->FREQUENCY = 2UL; // 2402 MHz - Channel 37
 	NRF_LOG_INFO("RADIO INIT DONE");
