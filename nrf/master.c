@@ -7,20 +7,22 @@
 // #include "nrf_log.h"
 // #include "nrf_log_ctrl.h"
 // #include "nrf_log_default_backends.h"
+#include "espar_driver.h"
 #include "nrf.h"
 #include "nrf_log.h"
 #include "nrf_log_ctrl.h"
 #include "nrf_log_default_backends.h"
+#include "nrf_radio.h"
 #include "nrf_sdh.h"
 #include "nrf_sdh_ble.h"
 #include "nrf_sdh_soc.h"
+#include "nrfx_timer.h"
+#include "radio.h"
+#include "usb_serial.h"
+#include <inttypes.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
-
-#include "espar_driver.h"
-#include "radio.h"
-#include "usb_serial.h"
 
 #ifdef ESPAR_GENETIC
 #include "espar_genetic.h"
@@ -31,7 +33,7 @@ bool espar_run = false;
 #ifdef ESPAR_GENETIC
 struct espar_gen_ctx eg_ctx;
 #endif
-
+static const nrfx_timer_t timer = NRFX_TIMER_INSTANCE(0);
 void espar_start()
 {
 	espar_run = 1;
@@ -88,50 +90,71 @@ bool espar_finish() { return false; }
 
 uint32_t last_packet_number = 0;
 uint32_t packets_received = 0;
-// #define BATCH_SIZE 100
-// uint32_t batch_number = 0;
-// uint16_t present_espar_char;
-// uint32_t batch_packets_received = 0;
-// uint32_t batch_first_packet = 0;
+#define BATCH_SIZE 100
+uint32_t batch_number = 0;
+uint16_t present_espar_char;
+uint32_t batch_packets_received = 0;
+uint32_t batch_first_packet = 0;
 
-// void next_batch(){
-// 	double bper;
-// 	uint32_t packet_diff = last_packet_number - batch_first_packet;
-// 	if (batch_number) {
-// 		if (!batch_packets_received || !packet_diff)
-// 			bper = 1;
-// 		else{
-// 			bper = (double) (packet_diff - batch_packets_received) / packet_diff;
-// 		}
-// 		NRF_LOG_INFO("[BATCH %u SUMMARY]: ESPAR CHAR: %s, BPR: %u, BPER: " NRF_LOG_FLOAT_MARKER,
-// 			batch_number,
-// 			espar_char_as_string(present_espar_char),
-// 			batch_packets_received,
-// 			NRF_LOG_FLOAT(bper));
-// 			// NRF_LOG_FLOAT((double)(BATCH_SIZE - batch_packets_received) / BATCH_SIZE));
-// 	}
-// 	batch_number++;
-// 	batch_packets_received = 0;
-// 	batch_first_packet = last_packet_number;
-// 	present_espar_char = get_next_char();
-// 	set_char(present_espar_char);
-// }
-
-void master_handler(void)
+void next_batch()
 {
-	struct radio_packet_t received = {0};
-	if (!master_enabled) {
-		return;
+	double bper;
+	uint32_t packet_diff = last_packet_number - batch_first_packet;
+	if (batch_number) {
+		if (!batch_packets_received || !packet_diff)
+			bper = 1;
+		else {
+			bper = (double)(packet_diff - batch_packets_received) /
+			       packet_diff;
+		}
+		NRF_LOG_INFO("[BATCH %u SUMMARY]: ESPAR CHAR: %s, BPR: %u, "
+			     "BPER: " NRF_LOG_FLOAT_MARKER,
+			     batch_number,
+			     espar_char_as_string(present_espar_char),
+			     batch_packets_received, NRF_LOG_FLOAT(bper));
 	}
-	received = read_packet();
-	if (!received.data) {
-		// NRF_LOG_INFO("Invalid packet received")
-		// NRF_LOG_FLUSH();
-		// next_batch();
-		return;
+	batch_number++;
+	batch_packets_received = 0;
+	batch_first_packet = last_packet_number;
+	present_espar_char = get_next_char();
+	set_char(present_espar_char);
+}
+
+void master_handler(void) {}
+
+static void timer_handler(nrf_timer_event_t event_type, void *context)
+{
+	switch (event_type) {
+	case NRF_TIMER_EVENT_COMPARE0:
+		/* WDT for receiving a packet, move to next batch if reached */
+		next_batch();
+		break;
+	default:
+		break;
 	}
+}
+
+static void timer_init()
+{
+	nrfx_err_t err;
+	nrfx_timer_config_t timer_cfg = {
+	    .frequency = NRF_TIMER_FREQ_1MHz,
+	    .mode = NRF_TIMER_MODE_TIMER,
+	    .bit_width = NRF_TIMER_BIT_WIDTH_24,
+	    .p_context = NULL,
+	};
+
+	err = nrfx_timer_init(&timer, &timer_cfg, timer_handler);
+	if (err != NRFX_SUCCESS) {
+		NRF_LOG_INFO("nrfx_timer_init failed with: %d\n", err);
+	}
+}
+
+void master_packet_handler(struct radio_packet_t received)
+{
+	nrfx_timer_clear(&timer);
 	/* discard the value of jammer packets */
-	if (received.data == 0xffffffff) {
+	if (!received.data || received.data == 0xffffffff) {
 		return;
 	}
 	packets_received++;
@@ -142,23 +165,22 @@ void master_handler(void)
 	}
 	last_packet_number = received.data;
 
-	// /* brute force  */
-	// if (batch_packets_received >= BATCH_SIZE) {
-	// 	/* first packet from a new batch received */
-	// 	// batch_number = last_packet_number / BATCH_SIZE;
-	// 	next_batch();
-	// }
-	// // if(!batch_first_packet)
-	// // 	batch_first_packet = last_packet_number;
-	// batch_packets_received++;
-	// /* brute force end */
+	/* brute force  */
+	batch_packets_received++;
+	if (batch_packets_received >= BATCH_SIZE) {
+		/* first packet from a new batch received */
+		// batch_number = last_packet_number / BATCH_SIZE;
+		next_batch();
+	}
+	// if(!batch_first_packet)
+	// 	batch_first_packet = last_packet_number;
+	/* brute force end */
 
 	NRF_LOG_INFO(
 	    "RSSI: %d, PR: %u, LP: %u,  PER: " NRF_LOG_FLOAT_MARKER,
 	    received.rssi * (-1), packets_received, last_packet_number,
 	    NRF_LOG_FLOAT((double)(last_packet_number - packets_received) /
 			  last_packet_number));
-	NRF_LOG_FLUSH();
 }
 
 void master_start()
@@ -166,13 +188,25 @@ void master_start()
 	last_packet_number = 0;
 	packets_received = 0;
 	master_enabled = true;
+	radio_rx(master_packet_handler);
+	nrfx_timer_enable(&timer);
 }
 
-void master_stop() { master_enabled = false; }
+void master_stop()
+{
+	nrfx_timer_disable(&timer);
+	master_enabled = false;
+}
 
 void master_init()
 {
 	radio_init();
+	timer_init();
+	nrfx_timer_extended_compare(
+	    &timer, NRF_TIMER_CC_CHANNEL0, nrfx_timer_ms_to_ticks(&timer, 1000),
+	    (NRF_TIMER_SHORT_COMPARE0_CLEAR_MASK), true);
+	nrf_radio_int_enable(NRF_RADIO_INT_CRCOK_MASK);
+	NVIC_EnableIRQ(RADIO_IRQn);
 #ifdef BOARD_DD
 	espar_init();
 	NRF_LOG_INFO("ESPAR INIT DONE");
