@@ -88,34 +88,74 @@ bool espar_finish() { return false; }
 
 uint32_t last_packet_number = 0;
 uint32_t packets_received = 0;
+// #define BATCH_SIZE 100
+// uint32_t batch_number = 0;
+// uint16_t present_espar_char;
+// uint32_t batch_packets_received = 0;
+// uint32_t batch_first_packet = 0;
+
+// void next_batch(){
+// 	double bper;
+// 	uint32_t packet_diff = last_packet_number - batch_first_packet;
+// 	if (batch_number) {
+// 		if (!batch_packets_received || !packet_diff)
+// 			bper = 1;
+// 		else{
+// 			bper = (double) (packet_diff - batch_packets_received) / packet_diff;
+// 		}
+// 		NRF_LOG_INFO("[BATCH %u SUMMARY]: ESPAR CHAR: %s, BPR: %u, BPER: " NRF_LOG_FLOAT_MARKER,
+// 			batch_number,
+// 			espar_char_as_string(present_espar_char),
+// 			batch_packets_received,
+// 			NRF_LOG_FLOAT(bper));
+// 			// NRF_LOG_FLOAT((double)(BATCH_SIZE - batch_packets_received) / BATCH_SIZE));
+// 	}
+// 	batch_number++;
+// 	batch_packets_received = 0;
+// 	batch_first_packet = last_packet_number;
+// 	present_espar_char = get_next_char();
+// 	set_char(present_espar_char);
+// }
 
 void master_handler(void)
 {
-	uint32_t received = 0;
+	struct radio_packet_t received = {0};
 	if (!master_enabled) {
 		return;
 	}
 	received = read_packet();
-	if (!received) {
+	if (!received.data) {
 		// NRF_LOG_INFO("Invalid packet received")
 		// NRF_LOG_FLUSH();
+		// next_batch();
 		return;
 	}
 	/* discard the value of jammer packets */
-	if (received == 0xffffffff){
+	if (received.data == 0xffffffff) {
 		return;
 	}
 	packets_received++;
-	if (received < last_packet_number) {
+	if (received.data < last_packet_number) {
 		/* if received smaller valua than last time, then asume new
 		 * package set is started */
 		packets_received = 1;
 	}
-	last_packet_number = received;
+	last_packet_number = received.data;
+
+	// /* brute force  */
+	// if (batch_packets_received >= BATCH_SIZE) {
+	// 	/* first packet from a new batch received */
+	// 	// batch_number = last_packet_number / BATCH_SIZE;
+	// 	next_batch();
+	// }
+	// // if(!batch_first_packet)
+	// // 	batch_first_packet = last_packet_number;
+	// batch_packets_received++;
+	// /* brute force end */
 
 	NRF_LOG_INFO(
-	    "PR: %u, LP: %u,  PER: " NRF_LOG_FLOAT_MARKER, packets_received,
-	    last_packet_number,
+	    "RSSI: %d, PR: %u, LP: %u,  PER: " NRF_LOG_FLOAT_MARKER,
+	    received.rssi * (-1), packets_received, last_packet_number,
 	    NRF_LOG_FLOAT((double)(last_packet_number - packets_received) /
 			  last_packet_number));
 	NRF_LOG_FLUSH();
@@ -137,6 +177,7 @@ void master_init()
 	espar_init();
 	NRF_LOG_INFO("ESPAR INIT DONE");
 	espar_start();
+	present_espar_char = 0xffff;
 	set_char(0xffff);
 	NRF_LOG_INFO("ESPAR START DONE");
 #ifdef ESPAR_GENETIC

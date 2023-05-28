@@ -12,6 +12,7 @@
                 "nrf_drv_clock.h": "c",
                 "stdint.h": "c",
                 "fds.h": "c",
-                "jammer.h": "c"
+                "jammer.h": "c",
+                "nrf_radio.h": "c"
         }
 }

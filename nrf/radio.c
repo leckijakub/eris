@@ -1,6 +1,8 @@
+#include "radio.h"
 #include "app_error.h"
 #include "nrf_error.h"
 #include "radio_config.h"
+#include "nrf_radio.h"
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -44,12 +46,13 @@ void radio_disable(void)
 
 /**@brief Function for reading packet.
  */
-uint32_t read_packet()
+struct radio_packet_t read_packet()
 {
-	uint32_t result = 0;
+	struct radio_packet_t result = {0};
 
 	radio_disable();
 	NRF_RADIO->EVENTS_READY = 0U;
+	NRF_RADIO->SHORTS |= RADIO_SHORTS_ADDRESS_RSSISTART_Msk;
 	// Enable radio and wait for ready
 	NRF_RADIO->TASKS_RXEN = 1U;
 
@@ -60,15 +63,25 @@ uint32_t read_packet()
 	// Start listening and wait for address received event
 	NRF_RADIO->TASKS_START = 1U;
 
+	// uint32_t ticks = 0;
+	// uint32_t timeout = 5000000;
 	// Wait for end of packet or buttons state changed
 	while (NRF_RADIO->EVENTS_END == 0U) {
+		// ticks++;
+		// if(ticks > timeout){
+		// 	goto read_packet_exit;
+		// }
 		// wait
 	}
 
 	if (NRF_RADIO->CRCSTATUS == 1U) {
-		result = *((uint32_t *)NRF_RADIO->PACKETPTR);
+		result.data = *((uint32_t *)NRF_RADIO->PACKETPTR);
+		result.rssi = NRF_RADIO->RSSISAMPLE;
 		// result = packet;
+	}else {
+		result.data = 0xffffffff;
 	}
+read_packet_exit:
 	radio_disable();
 	/* NRF_RADIO->EVENTS_DISABLED = 0U;
 	// Disable radio
