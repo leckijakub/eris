@@ -1,0 +1,550 @@
+connecting to JLink...
+connecting to nRF52840_xxAA...
+connected, starting RTT...
+RTT started, 2 up bufs, 2 down bufs.
+up channels:
+    0: name = 'Terminal', size = 512 bytes, flags = 0
+    1: name = '', size = 0 bytes, flags = 0
+down channels:
+    0: name = 'Terminal', size = 16 bytes, flags = 0
+    1: name = '', size = 0 bytes, flags = 0
+<info> app: USBD EVT STARTED
+
+
+
+<info> app: RSSI: -60, PR: 1, LP: 33,  PER: 0.96
+
+<info> app: RSSI: -61, PR: 2, LP: 34,  PER: 0.94
+
+<info> app: RSSI: -66, PR: 3, LP: 35,  PER: 0.91
+
+<info> app: RSSI: -56, PR: 4, LP: 37,  PER: 0.89
+
+<info> app: RSSI: -63, PR: 5, LP: 513,  PER: 0.99
+
+# # jamming disabled here - 99.95% loss
+
+<info> app: RSSI: -60, PR: 6, LP: 12454,  PER: 0.99
+
+<info> app: RSSI: -65, PR: 7, LP: 12456,  PER: 0.99
+
+<info> app: RSSI: -62, PR: 8, LP: 12457,  PER: 0.99
+
+<info> app: RSSI: -64, PR: 9, LP: 12458,  PER: 0.99
+
+<info> app: RSSI: -63, PR: 10, LP: 12459,  PER: 0.99
+
+<info> app: RSSI: -65, PR: 11, LP: 12460,  PER: 0.99
+
+<info> app: RSSI: -64, PR: 12, LP: 12461,  PER: 0.99
+
+<info> app: RSSI: -64, PR: 13, LP: 12462,  PER: 0.99
+
+<info> app: RSSI: -64, PR: 14, LP: 12463,  PER: 0.99
+
+<info> app: RSSI: -63, PR: 15, LP: 12464,  PER: 0.99
+
+<info> app: RSSI: -63, PR: 16, LP: 12465,  PER: 0.99
+
+<info> app: RSSI: -63, PR: 17, LP: 12466,  PER: 0.99
+
+<info> app: RSSI: -63, PR: 18, LP: 12467,  PER: 0.99
+
+<info> app: RSSI: -63, PR: 19, LP: 12468,  PER: 0.99
+
+<info> app: RSSI: -63, PR: 20, LP: 12469,  PER: 0.99
+
+<info> app: RSSI: -63, PR: 21, LP: 12470,  PER: 0.99
+
+<info> app: RSSI: -63, PR: 22, LP: 12471,  PER: 0.99
+
+<info> app: RSSI: -64, PR: 23, LP: 12472,  PER: 0.99
+
+<info> app: RSSI: -63, PR: 24, LP: 12473,  PER: 0.99
+
+<info> app: RSSI: -63, PR: 25, LP: 12474,  PER: 0.99
+
+<info> app: RSSI: -63, PR: 26, LP: 12475,  PER: 0.99
+
+<info> app: RSSI: -64, PR: 27, LP: 12476,  PER: 0.99
+
+<info> app: RSSI: -64, PR: 28, LP: 12477,  PER: 0.99
+
+<info> app: RSSI: -64, PR: 29, LP: 12478,  PER: 0.99
+
+<info> app: RSSI: -64, PR: 30, LP: 12479,  PER: 0.99
+
+<info> app: RSSI: -62, PR: 31, LP: 12480,  PER: 0.99
+
+<info> app: RSSI: -63, PR: 32, LP: 12481,  PER: 0.99
+
+<info> app: RSSI: -62, PR: 33, LP: 12482,  PER: 0.99
+
+<info> app: RSSI: -62, PR: 34, LP: 12483,  PER: 0.99
+
+<info> app: RSSI: -63, PR: 35, LP: 12484,  PER: 0.99
+
+<info> app: RSSI: -63, PR: 36, LP: 12485,  PER: 0.99
+
+<info> app: RSSI: -63, PR: 37, LP: 12486,  PER: 0.99
+
+<info> app: RSSI: -63, PR: 38, LP: 12487,  PER: 0.99
+
+<info> app: RSSI: -63, PR: 39, LP: 12488,  PER: 0.99
+
+<info> app: RSSI: -63, PR: 40, LP: 12489,  PER: 0.99
+
+<info> app: RSSI: -63, PR: 41, LP: 12490,  PER: 0.99
+
+<info> app: RSSI: -63, PR: 42, LP: 12491,  PER: 0.99
+
+<info> app: RSSI: -64, PR: 43, LP: 12492,  PER: 0.99
+
+<info> app: RSSI: -64, PR: 44, LP: 12493,  PER: 0.99
+
+<info> app: RSSI: -64, PR: 45, LP: 12494,  PER: 0.99
+
+<info> app: RSSI: -64, PR: 46, LP: 12495,  PER: 0.99
+
+<info> app: RSSI: -63, PR: 47, LP: 12496,  PER: 0.99
+
+<info> app: RSSI: -63, PR: 48, LP: 12497,  PER: 0.99
+
+<info> app: RSSI: -63, PR: 49, LP: 12498,  PER: 0.99
+
+<info> app: RSSI: -63, PR: 50, LP: 12499,  PER: 0.99
+
+<info> app: RSSI: -63, PR: 51, LP: 12500,  PER: 0.99
+
+<info> app: RSSI: -63, PR: 52, LP: 12501,  PER: 0.99
+
+<info> app: RSSI: -63, PR: 53, LP: 12502,  PER: 0.99
+
+<info> app: RSSI: -63, PR: 54, LP: 12503,  PER: 0.99
+
+<info> app: RSSI: -64, PR: 55, LP: 12504,  PER: 0.99
+
+<info> app: RSSI: -64, PR: 56, LP: 12505,  PER: 0.99
+
+<info> app: RSSI: -64, PR: 57, LP: 12506,  PER: 0.99
+
+<info> app: RSSI: -64, PR: 58, LP: 12507,  PER: 0.99
+
+<info> app: RSSI: -65, PR: 59, LP: 12508,  PER: 0.99
+
+<info> app: RSSI: -65, PR: 60, LP: 12509,  PER: 0.99
+
+<info> app: RSSI: -64, PR: 61, LP: 12510,  PER: 0.99
+
+<info> app: RSSI: -64, PR: 62, LP: 12511,  PER: 0.99
+
+<info> app: RSSI: -63, PR: 63, LP: 12512,  PER: 0.99
+
+<info> app: RSSI: -62, PR: 64, LP: 12513,  PER: 0.99
+
+<info> app: RSSI: -63, PR: 65, LP: 12514,  PER: 0.99
+
+<info> app: RSSI: -63, PR: 66, LP: 12515,  PER: 0.99
+
+<info> app: RSSI: -63, PR: 67, LP: 12516,  PER: 0.99
+
+<info> app: RSSI: -63, PR: 68, LP: 12517,  PER: 0.99
+
+<info> app: RSSI: -63, PR: 69, LP: 12518,  PER: 0.99
+
+<info> app: RSSI: -63, PR: 70, LP: 12519,  PER: 0.99
+
+<info> app: RSSI: -64, PR: 71, LP: 12520,  PER: 0.99
+
+<info> app: RSSI: -64, PR: 72, LP: 12521,  PER: 0.99
+
+<info> app: RSSI: -64, PR: 73, LP: 12522,  PER: 0.99
+
+<info> app: RSSI: -64, PR: 74, LP: 12523,  PER: 0.99
+
+<info> app: RSSI: -64, PR: 75, LP: 12524,  PER: 0.99
+
+<info> app: RSSI: -64, PR: 76, LP: 12525,  PER: 0.99
+
+<info> app: RSSI: -64, PR: 77, LP: 12526,  PER: 0.99
+
+<info> app: RSSI: -64, PR: 78, LP: 12527,  PER: 0.99
+
+<info> app: RSSI: -64, PR: 79, LP: 12528,  PER: 0.99
+
+<info> app: RSSI: -63, PR: 80, LP: 12529,  PER: 0.99
+
+<info> app: RSSI: -63, PR: 81, LP: 12530,  PER: 0.99
+
+<info> app: RSSI: -64, PR: 82, LP: 12531,  PER: 0.99
+
+<info> app: RSSI: -64, PR: 83, LP: 12532,  PER: 0.99
+
+<info> app: RSSI: -64, PR: 84, LP: 12533,  PER: 0.99
+
+<info> app: RSSI: -64, PR: 85, LP: 12534,  PER: 0.99
+
+<info> app: RSSI: -64, PR: 86, LP: 12535,  PER: 0.99
+
+<info> app: RSSI: -65, PR: 87, LP: 12536,  PER: 0.99
+
+<info> app: RSSI: -65, PR: 88, LP: 12537,  PER: 0.99
+
+<info> app: RSSI: -64, PR: 89, LP: 12538,  PER: 0.99
+
+<info> app: RSSI: -65, PR: 90, LP: 12540,  PER: 0.99
+
+<info> app: RSSI: -65, PR: 91, LP: 12541,  PER: 0.99
+
+<info> app: RSSI: -65, PR: 92, LP: 12542,  PER: 0.99
+
+<info> app: RSSI: -64, PR: 93, LP: 12543,  PER: 0.99
+
+<info> app: RSSI: -61, PR: 94, LP: 12544,  PER: 0.99
+
+<info> app: RSSI: -62, PR: 95, LP: 12545,  PER: 0.99
+
+<info> app: RSSI: -62, PR: 96, LP: 12546,  PER: 0.99
+
+<info> app: RSSI: -62, PR: 97, LP: 12547,  PER: 0.99
+
+<info> app: RSSI: -62, PR: 98, LP: 12548,  PER: 0.99
+
+<info> app: RSSI: -62, PR: 99, LP: 12549,  PER: 0.99
+
+<info> app: RSSI: -62, PR: 100, LP: 12550,  PER: 0.99
+
+<info> app: RSSI: -62, PR: 101, LP: 12551,  PER: 0.99
+
+<info> app: RSSI: -63, PR: 102, LP: 12552,  PER: 0.99
+
+<info> app: RSSI: -63, PR: 103, LP: 12553,  PER: 0.99
+
+<info> app: RSSI: -62, PR: 104, LP: 12554,  PER: 0.99
+
+<info> app: RSSI: -62, PR: 105, LP: 12555,  PER: 0.99
+
+<info> app: RSSI: -62, PR: 106, LP: 12556,  PER: 0.99
+
+<info> app: RSSI: -63, PR: 107, LP: 12557,  PER: 0.99
+
+<info> app: RSSI: -64, PR: 108, LP: 12558,  PER: 0.99
+
+<info> app: RSSI: -64, PR: 109, LP: 12559,  PER: 0.99
+
+<info> app: RSSI: -62, PR: 110, LP: 12560,  PER: 0.99
+
+<info> app: RSSI: -62, PR: 111, LP: 12561,  PER: 0.99
+
+<info> app: RSSI: -62, PR: 112, LP: 12562,  PER: 0.99
+
+<info> app: RSSI: -62, PR: 113, LP: 12563,  PER: 0.99
+
+<info> app: RSSI: -62, PR: 114, LP: 12564,  PER: 0.99
+
+<info> app: RSSI: -61, PR: 115, LP: 12565,  PER: 0.99
+
+<info> app: RSSI: -62, PR: 116, LP: 12566,  PER: 0.99
+
+<info> app: RSSI: -63, PR: 117, LP: 12567,  PER: 0.99
+
+<info> app: RSSI: -63, PR: 118, LP: 12568,  PER: 0.99
+
+<info> app: RSSI: -63, PR: 119, LP: 12570,  PER: 0.99
+
+<info> app: RSSI: -63, PR: 120, LP: 12571,  PER: 0.99
+
+<info> app: RSSI: -63, PR: 121, LP: 12572,  PER: 0.99
+
+<info> app: RSSI: -63, PR: 122, LP: 12573,  PER: 0.99
+
+<info> app: RSSI: -63, PR: 123, LP: 12574,  PER: 0.99
+
+<info> app: RSSI: -63, PR: 124, LP: 12575,  PER: 0.99
+
+<info> app: RSSI: -59, PR: 125, LP: 12576,  PER: 0.99
+
+<info> app: RSSI: -61, PR: 126, LP: 12577,  PER: 0.98
+
+<info> app: RSSI: -61, PR: 127, LP: 12578,  PER: 0.98
+
+<info> app: RSSI: -62, PR: 128, LP: 12579,  PER: 0.98
+
+<info> app: RSSI: -63, PR: 129, LP: 12580,  PER: 0.98
+
+<info> app: RSSI: -63, PR: 130, LP: 12581,  PER: 0.98
+
+<info> app: RSSI: -62, PR: 131, LP: 12582,  PER: 0.98
+
+<info> app: RSSI: -62, PR: 132, LP: 12583,  PER: 0.98
+
+<info> app: RSSI: -63, PR: 133, LP: 12584,  PER: 0.98
+
+<info> app: RSSI: -63, PR: 134, LP: 12585,  PER: 0.98
+
+<info> app: RSSI: -63, PR: 135, LP: 12586,  PER: 0.98
+
+<info> app: RSSI: -63, PR: 136, LP: 12587,  PER: 0.98
+
+<info> app: RSSI: -64, PR: 137, LP: 12588,  PER: 0.98
+
+<info> app: RSSI: -64, PR: 138, LP: 12589,  PER: 0.98
+
+<info> app: RSSI: -64, PR: 139, LP: 12590,  PER: 0.98
+
+<info> app: RSSI: -65, PR: 140, LP: 12591,  PER: 0.98
+
+<info> app: RSSI: -63, PR: 141, LP: 12592,  PER: 0.98
+
+<info> app: RSSI: -63, PR: 142, LP: 12593,  PER: 0.98
+
+<info> app: RSSI: -62, PR: 143, LP: 12594,  PER: 0.98
+
+<info> app: RSSI: -61, PR: 144, LP: 12595,  PER: 0.98
+
+<info> app: RSSI: -62, PR: 145, LP: 12596,  PER: 0.98
+
+<info> app: RSSI: -63, PR: 146, LP: 12597,  PER: 0.98
+
+<info> app: RSSI: -62, PR: 147, LP: 12598,  PER: 0.98
+
+<info> app: RSSI: -62, PR: 148, LP: 12599,  PER: 0.98
+
+<info> app: RSSI: -62, PR: 149, LP: 12600,  PER: 0.98
+
+<info> app: RSSI: -63, PR: 150, LP: 12601,  PER: 0.98
+
+<info> app: RSSI: -64, PR: 151, LP: 12602,  PER: 0.98
+
+<info> app: RSSI: -64, PR: 152, LP: 12603,  PER: 0.98
+
+<info> app: RSSI: -64, PR: 153, LP: 12604,  PER: 0.98
+
+<info> app: RSSI: -63, PR: 154, LP: 12605,  PER: 0.98
+
+<info> app: RSSI: -64, PR: 155, LP: 12606,  PER: 0.98
+
+<info> app: RSSI: -63, PR: 156, LP: 12607,  PER: 0.98
+
+<info> app: RSSI: -61, PR: 157, LP: 12608,  PER: 0.98
+
+<info> app: RSSI: -62, PR: 158, LP: 12609,  PER: 0.98
+
+<info> app: RSSI: -61, PR: 159, LP: 12610,  PER: 0.98
+
+<info> app: RSSI: -61, PR: 160, LP: 12611,  PER: 0.98
+
+<info> app: RSSI: -60, PR: 161, LP: 12612,  PER: 0.98
+
+<info> app: RSSI: -60, PR: 162, LP: 12613,  PER: 0.98
+
+<info> app: RSSI: -59, PR: 163, LP: 12614,  PER: 0.98
+
+<info> app: RSSI: -60, PR: 164, LP: 12615,  PER: 0.98
+
+<info> app: RSSI: -60, PR: 165, LP: 12616,  PER: 0.98
+
+<info> app: RSSI: -61, PR: 166, LP: 12617,  PER: 0.98
+
+<info> app: RSSI: -61, PR: 167, LP: 12618,  PER: 0.98
+
+<info> app: RSSI: -61, PR: 168, LP: 12619,  PER: 0.98
+
+<info> app: RSSI: -61, PR: 169, LP: 12620,  PER: 0.98
+
+<info> app: RSSI: -61, PR: 170, LP: 12621,  PER: 0.98
+
+<info> app: RSSI: -62, PR: 171, LP: 12622,  PER: 0.98
+
+<info> app: RSSI: -63, PR: 172, LP: 12623,  PER: 0.98
+
+<info> app: RSSI: -63, PR: 173, LP: 12624,  PER: 0.98
+
+<info> app: RSSI: -63, PR: 174, LP: 12625,  PER: 0.98
+
+<info> app: RSSI: -62, PR: 175, LP: 12626,  PER: 0.98
+
+<info> app: RSSI: -62, PR: 176, LP: 12627,  PER: 0.98
+
+<info> app: RSSI: -62, PR: 177, LP: 12628,  PER: 0.98
+
+<info> app: RSSI: -62, PR: 178, LP: 12629,  PER: 0.98
+
+<info> app: RSSI: -63, PR: 179, LP: 12630,  PER: 0.98
+
+<info> app: RSSI: -65, PR: 180, LP: 12631,  PER: 0.98
+
+<info> app: RSSI: -67, PR: 181, LP: 12632,  PER: 0.98
+
+<info> app: RSSI: -69, PR: 182, LP: 12633,  PER: 0.98
+
+<info> app: RSSI: -70, PR: 183, LP: 12634,  PER: 0.98
+
+<info> app: RSSI: -69, PR: 184, LP: 12635,  PER: 0.98
+
+<info> app: RSSI: -70, PR: 185, LP: 12636,  PER: 0.98
+
+<info> app: RSSI: -69, PR: 186, LP: 12637,  PER: 0.98
+
+<info> app: RSSI: -68, PR: 187, LP: 12638,  PER: 0.98
+
+<info> app: RSSI: -68, PR: 188, LP: 12639,  PER: 0.98
+
+<info> app: RSSI: -66, PR: 189, LP: 12640,  PER: 0.98
+
+<info> app: RSSI: -65, PR: 190, LP: 12641,  PER: 0.98
+
+<info> app: RSSI: -66, PR: 191, LP: 12642,  PER: 0.98
+
+<info> app: RSSI: -66, PR: 192, LP: 12643,  PER: 0.98
+
+<info> app: RSSI: -65, PR: 193, LP: 12644,  PER: 0.98
+
+<info> app: RSSI: -65, PR: 194, LP: 12645,  PER: 0.98
+
+<info> app: RSSI: -64, PR: 195, LP: 12646,  PER: 0.98
+
+<info> app: RSSI: -64, PR: 196, LP: 12647,  PER: 0.98
+
+<info> app: RSSI: -65, PR: 197, LP: 12648,  PER: 0.98
+
+<info> app: RSSI: -65, PR: 198, LP: 12649,  PER: 0.98
+
+<info> app: RSSI: -65, PR: 199, LP: 12650,  PER: 0.98
+
+<info> app: RSSI: -65, PR: 200, LP: 12651,  PER: 0.98
+
+<info> app: RSSI: -65, PR: 201, LP: 12652,  PER: 0.98
+
+<info> app: RSSI: -64, PR: 202, LP: 12653,  PER: 0.98
+
+<info> app: RSSI: -63, PR: 203, LP: 12654,  PER: 0.98
+
+<info> app: RSSI: -63, PR: 204, LP: 12655,  PER: 0.98
+
+<info> app: RSSI: -62, PR: 205, LP: 12656,  PER: 0.98
+
+<info> app: RSSI: -62, PR: 206, LP: 12657,  PER: 0.98
+
+<info> app: RSSI: -62, PR: 207, LP: 12658,  PER: 0.98
+
+<info> app: RSSI: -62, PR: 208, LP: 12659,  PER: 0.98
+
+<info> app: RSSI: -62, PR: 209, LP: 12660,  PER: 0.98
+
+<info> app: RSSI: -62, PR: 210, LP: 12661,  PER: 0.98
+
+<info> app: RSSI: -63, PR: 211, LP: 12662,  PER: 0.98
+
+<info> app: RSSI: -63, PR: 212, LP: 12663,  PER: 0.98
+
+<info> app: RSSI: -63, PR: 213, LP: 12664,  PER: 0.98
+
+<info> app: RSSI: -63, PR: 214, LP: 12665,  PER: 0.98
+
+<info> app: RSSI: -63, PR: 215, LP: 12666,  PER: 0.98
+
+<info> app: RSSI: -63, PR: 216, LP: 12667,  PER: 0.98
+
+<info> app: RSSI: -64, PR: 217, LP: 12668,  PER: 0.98
+
+<info> app: RSSI: -65, PR: 218, LP: 12669,  PER: 0.98
+
+<info> app: RSSI: -66, PR: 219, LP: 12670,  PER: 0.98
+
+<info> app: RSSI: -65, PR: 220, LP: 12671,  PER: 0.98
+
+<info> app: RSSI: -63, PR: 221, LP: 12672,  PER: 0.98
+
+<info> app: RSSI: -63, PR: 222, LP: 12673,  PER: 0.98
+
+<info> app: RSSI: -63, PR: 223, LP: 12674,  PER: 0.98
+
+<info> app: RSSI: -64, PR: 224, LP: 12676,  PER: 0.98
+
+<info> app: RSSI: -64, PR: 225, LP: 12677,  PER: 0.98
+
+<info> app: RSSI: -64, PR: 226, LP: 12678,  PER: 0.98
+
+<info> app: RSSI: -64, PR: 227, LP: 12679,  PER: 0.98
+
+<info> app: RSSI: -63, PR: 228, LP: 12680,  PER: 0.98
+
+<info> app: RSSI: -63, PR: 229, LP: 12681,  PER: 0.98
+
+<info> app: RSSI: -63, PR: 230, LP: 12682,  PER: 0.98
+
+<info> app: RSSI: -63, PR: 231, LP: 12683,  PER: 0.98
+
+<info> app: RSSI: -64, PR: 232, LP: 12684,  PER: 0.98
+
+<info> app: RSSI: -65, PR: 233, LP: 12685,  PER: 0.98
+
+<info> app: RSSI: -65, PR: 234, LP: 12686,  PER: 0.98
+
+<info> app: RSSI: -65, PR: 235, LP: 12687,  PER: 0.98
+
+<info> app: RSSI: -65, PR: 236, LP: 12688,  PER: 0.98
+
+<info> app: RSSI: -66, PR: 237, LP: 12689,  PER: 0.98
+
+<info> app: RSSI: -66, PR: 238, LP: 12690,  PER: 0.98
+
+<info> app: RSSI: -66, PR: 239, LP: 12691,  PER: 0.98
+
+<info> app: RSSI: -66, PR: 240, LP: 12692,  PER: 0.98
+
+<info> app: RSSI: -66, PR: 241, LP: 12693,  PER: 0.98
+
+<info> app: RSSI: -67, PR: 242, LP: 12694,  PER: 0.98
+
+<info> app: RSSI: -67, PR: 243, LP: 12695,  PER: 0.98
+
+<info> app: RSSI: -68, PR: 244, LP: 12696,  PER: 0.98
+
+<info> app: RSSI: -68, PR: 245, LP: 12697,  PER: 0.98
+
+<info> app: RSSI: -67, PR: 246, LP: 12698,  PER: 0.98
+
+<info> app: RSSI: -67, PR: 247, LP: 12699,  PER: 0.98
+
+<info> app: RSSI: -67, PR: 248, LP: 12700,  PER: 0.98
+
+<info> app: RSSI: -67, PR: 249, LP: 12701,  PER: 0.98
+
+<info> app: RSSI: -67, PR: 250, LP: 12702,  PER: 0.98
+
+<info> app: RSSI: -66, PR: 251, LP: 12703,  PER: 0.98
+
+<info> app: RSSI: -64, PR: 252, LP: 12704,  PER: 0.98
+
+<info> app: RSSI: -65, PR: 253, LP: 12705,  PER: 0.98
+
+<info> app: RSSI: -65, PR: 254, LP: 12706,  PER: 0.98
+
+<info> app: RSSI: -65, PR: 255, LP: 12707,  PER: 0.97
+
+<info> app: RSSI: -65, PR: 256, LP: 12708,  PER: 0.97
+
+<info> app: RSSI: -65, PR: 257, LP: 12709,  PER: 0.97
+
+<info> app: RSSI: -65, PR: 258, LP: 12710,  PER: 0.97
+
+<info> app: RSSI: -65, PR: 259, LP: 12711,  PER: 0.97
+
+<info> app: RSSI: -65, PR: 260, LP: 12712,  PER: 0.97
+
+<info> app: RSSI: -65, PR: 261, LP: 12713,  PER: 0.97
+
+<info> app: RSSI: -65, PR: 262, LP: 12714,  PER: 0.97
+
+<info> app: RSSI: -65, PR: 263, LP: 12715,  PER: 0.97
+
+<info> app: RSSI: -65, PR: 264, LP: 12716,  PER: 0.97
+
+<info> app: RSSI: -65, PR: 265, LP: 12717,  PER: 0.97
+
+<info> app: RSSI: -65, PR: 266, LP: 12718,  PER: 0.97
+
+<info> app: RSSI: -65, PR: 267, LP: 12719,  PER: 0.97
+

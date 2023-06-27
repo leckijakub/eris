@@ -1,0 +1,49 @@
+connecting to JLink...
+connecting to nRF52840_xxAA...
+connected, starting RTT...
+RTT started, 2 up bufs, 2 down bufs.
+up channels:
+    0: name = 'Terminal', size = 512 bytes, flags = 0
+    1: name = '', size = 0 bytes, flags = 0
+down channels:
+    0: name = 'Terminal', size = 16 bytes, flags = 0
+    1: name = '', size = 0 bytes, flags = 0
+<info> app: RSSI: -65, PR: 22, LP: 2720,  PER: 0.99
+<info> app: RSSI: -63, PR: 23, LP: 2721,  PER: 0.99
+<info> app: RSSI: -58, PR: 24, LP: 2724,  PER: 0.99
+<info> app: RSSI: -61, PR: 25, LP: 2852,  PER: 0.99
+<info> app: RSSI: -64, PR: 26, LP: 2938,  PER: 0.99
+<info> app: RSSI: -65, PR: 27, LP: 2939,  PER: 0.99
+<info> app: RSSI: -65, PR: 28, LP: 2940,  PER: 0.99
+<info> app: RSSI: -63, PR: 29, LP: 2942,  PER: 0.99
+<info> app: RSSI: -62, PR: 30, LP: 2943,  PER: 0.98
+<info> app: RSSI: -59, PR: 31, LP: 2944,  PER: 0.98
+<info> app: RSSI: -61, PR: 32, LP: 2945,  PER: 0.98
+<info> app: RSSI: -56, PR: 33, LP: 2946,  PER: 0.98
+<info> app: RSSI: -68, PR: 34, LP: 2947,  PER: 0.98
+<info> app: RSSI: -59, PR: 35, LP: 2948,  PER: 0.98
+<info> app: RSSI: -58, PR: 36, LP: 2960,  PER: 0.98
+<info> app: RSSI: -60, PR: 37, LP: 2964,  PER: 0.98
+<info> app: RSSI: -64, PR: 38, LP: 2965,  PER: 0.98
+<info> app: RSSI: -69, PR: 39, LP: 2966,  PER: 0.98
+<info> app: RSSI: -61, PR: 40, LP: 3083,  PER: 0.98
+<info> app: RSSI: -60, PR: 41, LP: 3091,  PER: 0.98
+<info> app: RSSI: -61, PR: 42, LP: 3106,  PER: 0.98
+<info> app: RSSI: -60, PR: 43, LP: 3107,  PER: 0.98
+<info> app: RSSI: -61, PR: 44, LP: 3109,  PER: 0.98
+<info> app: RSSI: -58, PR: 45, LP: 3847,  PER: 0.98
+<info> app: RSSI: -68, PR: 46, LP: 4660,  PER: 0.99
+<info> app: RSSI: -66, PR: 47, LP: 4661,  PER: 0.98
+<info> app: RSSI: -61, PR: 48, LP: 4717,  PER: 0.98
+<info> app: RSSI: -67, PR: 49, LP: 4972,  PER: 0.99
+<info> app: RSSI: -67, PR: 50, LP: 5006,  PER: 0.99
+<info> app: RSSI: -73, PR: 51, LP: 5007,  PER: 0.98
+<info> app: RSSI: -67, PR: 52, LP: 5008,  PER: 0.98
+<info> app: RSSI: -61, PR: 53, LP: 5009,  PER: 0.98
+<info> app: RSSI: -69, PR: 54, LP: 5010,  PER: 0.98
+<info> app: RSSI: -68, PR: 55, LP: 5011,  PER: 0.98
+<info> app: RSSI: -61, PR: 56, LP: 5012,  PER: 0.98
+<info> app: RSSI: -61, PR: 57, LP: 5013,  PER: 0.98
+<info> app: RSSI: -64, PR: 58, LP: 5215,  PER: 0.98
+<info> app: RSSI: -62, PR: 59, LP: 5216,  PER: 0.98
+<info> app: RSSI: -64, PR: 60, LP: 18151,  PER: 0.99
