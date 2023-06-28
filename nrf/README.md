@@ -48,5 +48,18 @@ For usage instructions run:
 ```
 
 
+## Examples
+
+resetting and flashing a dongle
+```
+./dut_ctrl.py /dev/ttyACM1 reset && ~/.nrfutil/bin/nrfutil dfu usb-serial -pkg pca10059/armgcc/_build/dfu.zip -p /dev/ttyACM1 -b 115200
+```
 
 
+
+ESPAR board programming:
+```
+nrfjprog --family NRF52 --recover
+nrfjprog --family NRF52 --program pca10056/armgcc/_build/nrf52840_xxaa.hex
+nrfjprog --family NRF52 --reset
+```

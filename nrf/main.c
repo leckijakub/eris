@@ -352,10 +352,10 @@ static void fds_evt_handler(fds_evt_t const *p_evt)
 {
 	if (p_evt->result == NRF_SUCCESS) {
 		NRF_LOG_INFO("Event: %s received (NRF_SUCCESS)",
-			      fds_evt_str[p_evt->id]);
+			     fds_evt_str[p_evt->id]);
 	} else {
 		NRF_LOG_INFO("Event: %s received (%s)", fds_evt_str[p_evt->id],
-			      fds_err_str(p_evt->result));
+			     fds_err_str(p_evt->result));
 	}
 
 	switch (p_evt->id) {
@@ -453,6 +453,9 @@ void storage_load()
 	/* Close the record when done reading. */
 	err_code = fds_record_close(&desc);
 	APP_ERROR_CHECK(err_code);
+
+	USB_SER_PRINT("Present config: state:%d, power=%d\r\n",
+		      present_config.state, present_config.power);
 }
 
 void storage_update()

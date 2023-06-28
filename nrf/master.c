@@ -1,4 +1,4 @@
-
+#include "master.h"
 #include "app_error.h"
 #include "ble.h"
 #include "ble_advertising.h"
@@ -28,12 +28,14 @@
 #include "espar_genetic.h"
 #endif
 
+#define MASTER_WDT_TIMEOUT_MS 2000
+
 static bool master_enabled = false;
 bool espar_run = false;
 #ifdef ESPAR_GENETIC
 struct espar_gen_ctx eg_ctx;
 #endif
-static const nrfx_timer_t timer = NRFX_TIMER_INSTANCE(0);
+static const nrfx_timer_t master_timer = NRFX_TIMER_INSTANCE(0);
 void espar_start()
 {
 	espar_run = 1;
@@ -99,13 +101,15 @@ uint32_t batch_first_packet = 0;
 void next_batch()
 {
 	double bper;
-	uint32_t packet_diff = last_packet_number - batch_first_packet;
+	uint32_t batch_packet_diff =
+	    last_packet_number - batch_first_packet + 1;
 	if (batch_number) {
-		if (!batch_packets_received || !packet_diff)
+		if (!batch_packets_received || !batch_packet_diff)
 			bper = 1;
 		else {
-			bper = (double)(BATCH_SIZE - batch_packets_received) /
-			       BATCH_SIZE;
+			bper = (double)(batch_packet_diff -
+					batch_packets_received) /
+			       batch_packet_diff;
 		}
 		NRF_LOG_INFO("[BATCH %u SUMMARY]: ESPAR CHAR: %s, BPR: %u, "
 			     "BPER: " NRF_LOG_FLOAT_MARKER,
@@ -116,13 +120,17 @@ void next_batch()
 	batch_number++;
 	batch_packets_received = 0;
 	batch_first_packet = 0;
-	present_espar_char = get_next_char();
-	set_char(present_espar_char);
+	if (present_espar_char >= (1 << 12) - 1) {
+		master_stop();
+	} else {
+		present_espar_char = get_next_char();
+		set_char(present_espar_char);
+	}
 }
 
 void master_handler(void) {}
 
-static void timer_handler(nrf_timer_event_t event_type, void *context)
+static void master_timer_handler(nrf_timer_event_t event_type, void *context)
 {
 	switch (event_type) {
 	case NRF_TIMER_EVENT_COMPARE0:
@@ -134,7 +142,7 @@ static void timer_handler(nrf_timer_event_t event_type, void *context)
 	}
 }
 
-static void timer_init()
+static void master_timer_init()
 {
 	nrfx_err_t err;
 	nrfx_timer_config_t timer_cfg = {
@@ -144,7 +152,7 @@ static void timer_init()
 	    .p_context = NULL,
 	};
 
-	err = nrfx_timer_init(&timer, &timer_cfg, timer_handler);
+	err = nrfx_timer_init(&master_timer, &timer_cfg, master_timer_handler);
 	if (err != NRFX_SUCCESS) {
 		NRF_LOG_INFO("nrfx_timer_init failed with: %d\n", err);
 	}
@@ -153,7 +161,7 @@ static void timer_init()
 void master_packet_handler(struct radio_packet_t received)
 {
 	/* kick the watchdog timer as a packet was received */
-	nrfx_timer_clear(&timer);
+	nrfx_timer_clear(&master_timer);
 
 	/* discard the value of jammer packets */
 	if (!received.data || received.data == 0xffffffff) {
@@ -167,25 +175,26 @@ void master_packet_handler(struct radio_packet_t received)
 		 * package set is started */
 		packets_received = 1;
 		batch_packets_received = 1;
+		batch_first_packet = 0;
 	}
 	last_packet_number = received.data;
 
 	/* brute force  */
-	if(!batch_first_packet)
+	if (!batch_first_packet)
 		batch_first_packet = last_packet_number;
 	batch_packets_received++;
-	if (batch_packets_received >= BATCH_SIZE) {
+	if (last_packet_number - batch_first_packet + 1 >= BATCH_SIZE) {
 		/* first packet from a new batch received */
 		// batch_number = last_packet_number / BATCH_SIZE;
 		next_batch();
 	}
 	/* brute force end */
 
-	NRF_LOG_INFO(
-	    "RSSI: %d, PR: %u, LP: %u,  PER: " NRF_LOG_FLOAT_MARKER,
-	    received.rssi * (-1), packets_received, last_packet_number,
-	    NRF_LOG_FLOAT((double)(last_packet_number - packets_received) /
-			  last_packet_number));
+	// NRF_LOG_INFO(
+	//     "RSSI: %d, PR: %u, LP: %u,  PER: " NRF_LOG_FLOAT_MARKER,
+	//     received.rssi * (-1), packets_received, last_packet_number,
+	//     NRF_LOG_FLOAT((double)(last_packet_number - packets_received) /
+	// 		  last_packet_number));
 }
 
 void master_start()
@@ -194,21 +203,23 @@ void master_start()
 	packets_received = 0;
 	master_enabled = true;
 	radio_rx(master_packet_handler);
-	nrfx_timer_enable(&timer);
+	nrfx_timer_enable(&master_timer);
 }
 
 void master_stop()
 {
-	nrfx_timer_disable(&timer);
+	radio_disable();
+	nrfx_timer_disable(&master_timer);
 	master_enabled = false;
 }
 
 void master_init()
 {
 	radio_init();
-	timer_init();
+	master_timer_init();
 	nrfx_timer_extended_compare(
-	    &timer, NRF_TIMER_CC_CHANNEL0, nrfx_timer_ms_to_ticks(&timer, 2000),
+	    &master_timer, NRF_TIMER_CC_CHANNEL0,
+	    nrfx_timer_ms_to_ticks(&master_timer, MASTER_WDT_TIMEOUT_MS),
 	    (NRF_TIMER_SHORT_COMPARE0_CLEAR_MASK), true);
 	nrf_radio_int_enable(NRF_RADIO_INT_CRCOK_MASK);
 	NVIC_EnableIRQ(RADIO_IRQn);
@@ -216,8 +227,7 @@ void master_init()
 	espar_init();
 	NRF_LOG_INFO("ESPAR INIT DONE");
 	espar_start();
-	present_espar_char = 0xffff;
-	set_char(0xffff);
+	present_espar_char = 0;
 	NRF_LOG_INFO("ESPAR START DONE");
 #ifdef ESPAR_GENETIC
 	espar_gen_init(&eg_ctx);
