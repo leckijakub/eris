@@ -104,8 +104,8 @@ void next_batch()
 		if (!batch_packets_received || !packet_diff)
 			bper = 1;
 		else {
-			bper = (double)(packet_diff - batch_packets_received) /
-			       packet_diff;
+			bper = (double)(BATCH_SIZE - batch_packets_received) /
+			       BATCH_SIZE;
 		}
 		NRF_LOG_INFO("[BATCH %u SUMMARY]: ESPAR CHAR: %s, BPR: %u, "
 			     "BPER: " NRF_LOG_FLOAT_MARKER,
@@ -115,7 +115,7 @@ void next_batch()
 	}
 	batch_number++;
 	batch_packets_received = 0;
-	batch_first_packet = last_packet_number;
+	batch_first_packet = 0;
 	present_espar_char = get_next_char();
 	set_char(present_espar_char);
 }
@@ -152,28 +152,33 @@ static void timer_init()
 
 void master_packet_handler(struct radio_packet_t received)
 {
+	/* kick the watchdog timer as a packet was received */
 	nrfx_timer_clear(&timer);
+
 	/* discard the value of jammer packets */
 	if (!received.data || received.data == 0xffffffff) {
 		return;
 	}
+
 	packets_received++;
+
 	if (received.data < last_packet_number) {
-		/* if received smaller valua than last time, then asume new
+		/* if received smaller value than last time, then asume new
 		 * package set is started */
 		packets_received = 1;
+		batch_packets_received = 1;
 	}
 	last_packet_number = received.data;
 
 	/* brute force  */
+	if(!batch_first_packet)
+		batch_first_packet = last_packet_number;
 	batch_packets_received++;
 	if (batch_packets_received >= BATCH_SIZE) {
 		/* first packet from a new batch received */
 		// batch_number = last_packet_number / BATCH_SIZE;
 		next_batch();
 	}
-	// if(!batch_first_packet)
-	// 	batch_first_packet = last_packet_number;
 	/* brute force end */
 
 	NRF_LOG_INFO(
@@ -203,7 +208,7 @@ void master_init()
 	radio_init();
 	timer_init();
 	nrfx_timer_extended_compare(
-	    &timer, NRF_TIMER_CC_CHANNEL0, nrfx_timer_ms_to_ticks(&timer, 1000),
+	    &timer, NRF_TIMER_CC_CHANNEL0, nrfx_timer_ms_to_ticks(&timer, 2000),
 	    (NRF_TIMER_SHORT_COMPARE0_CLEAR_MASK), true);
 	nrf_radio_int_enable(NRF_RADIO_INT_CRCOK_MASK);
 	NVIC_EnableIRQ(RADIO_IRQn);

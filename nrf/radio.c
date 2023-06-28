@@ -152,7 +152,6 @@ void radio_unmodulated_tx_carrier(uint8_t txpower, uint8_t channel)
 	radio_disable();
 	NRF_RADIO->SHORTS = RADIO_SHORTS_READY_START_Msk;
 	NRF_RADIO->TXPOWER = (txpower << RADIO_TXPOWER_TXPOWER_Pos);
-	// NRF_RADIO->MODE = (mode << RADIO_MODE_MODE_Pos);
 
 	radio_channel_set(channel);
 	NRF_RADIO->TASKS_TXEN = 1;
