@@ -26,6 +26,7 @@
 
 struct radio_config_t {
 	void (*rx_handler)(struct radio_packet_t);
+	void (*tx_handler)(struct radio_packet_t *);
 };
 static volatile struct radio_config_t radio_config = {0};
 
@@ -177,6 +178,38 @@ void radio_rx(void (*packet_handler)(struct radio_packet_t))
 	radio_start(true);
 }
 
+void radio_tx(void (*packet_handler)(struct radio_packet_t *))
+{
+	radio_disable();
+	packet = 0;
+
+	// tx_packet_cnt = 0;
+
+	nrf_radio_shorts_enable(NRF_RADIO_SHORT_READY_START_MASK |
+				NRF_RADIO_SHORT_END_START_MASK);
+
+	radio_config.tx_handler = packet_handler;
+	nrf_radio_event_clear(NRF_RADIO_EVENT_END);
+	nrf_radio_int_enable(NRF_RADIO_INT_END_MASK);
+
+	radio_start(false);
+
+	// // send the packet:
+	// NRF_RADIO->EVENTS_READY = 0U;
+	// NRF_RADIO->TASKS_TXEN = 1;
+
+	// while (NRF_RADIO->EVENTS_READY == 0U) {
+	// 	// wait
+	// }
+	// NRF_RADIO->EVENTS_END = 0U;
+	// NRF_RADIO->TASKS_START = 1U;
+
+	// while (NRF_RADIO->EVENTS_END == 0U) {
+	// 	// wait
+	// }
+	// radio_disable();
+}
+
 void radio_init()
 {
 	if (radio_configured)
@@ -198,11 +231,19 @@ void radio_init()
 
 void RADIO_IRQHandler(void)
 {
+	struct radio_packet_t tx_packet;
 	struct radio_packet_t rx_packet;
 	if (nrf_radio_event_check(NRF_RADIO_EVENT_CRCOK)) {
 		nrf_radio_event_clear(NRF_RADIO_EVENT_CRCOK);
 		rx_packet.data = *((uint32_t *)nrf_radio_packetptr_get());
 		rx_packet.rssi = nrf_radio_rssi_sample_get();
 		radio_config.rx_handler(rx_packet);
+	}
+	if (nrf_radio_event_check(NRF_RADIO_EVENT_END)) {
+		nrf_radio_event_clear(NRF_RADIO_EVENT_END);
+		tx_packet.data = *((uint32_t *)nrf_radio_packetptr_get());
+		tx_packet.rssi = nrf_radio_rssi_sample_get();
+		radio_config.tx_handler(&tx_packet);
+		*(uint32_t *)nrf_radio_packetptr_get() = tx_packet.data;
 	}
 }

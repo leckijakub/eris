@@ -35,6 +35,10 @@ static bool client_enabled = false;
 static uint32_t packet;
 static const nrfx_timer_t client_timer = NRFX_TIMER_INSTANCE(1);
 
+void client_packet_handler(struct radio_packet_t* packet){
+	packet->data++;
+}
+
 int client_start(uint8_t power_level)
 {
 	if (!radio_power_level_valid(power_level)) {
@@ -44,7 +48,8 @@ int client_start(uint8_t power_level)
 	NRF_RADIO->TXPOWER = (power_level << RADIO_TXPOWER_TXPOWER_Pos);
 	packet = 1;
 	client_enabled = true;
-	nrfx_timer_enable(&client_timer);
+	radio_tx(client_packet_handler);
+	// nrfx_timer_enable(&client_timer);
 	return 1;
 }
 
@@ -52,6 +57,7 @@ void client_stop(void)
 {
 	client_enabled = false;
 	nrfx_timer_disable(&client_timer);
+	radio_disable();
 }
 
 static void client_timer_handler(nrf_timer_event_t event_type, void *context)
