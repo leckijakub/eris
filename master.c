@@ -189,7 +189,7 @@ void master_packet_handler(struct radio_packet_t received)
 		// batch_number = last_packet_number / BATCH_SIZE;
 		next_batch();
 	}
-	/* brute force end */htop
+	/* brute force end */
 	
 
 	// NRF_LOG_INFO(
