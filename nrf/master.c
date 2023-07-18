@@ -3,11 +3,6 @@
 #include "ble.h"
 #include "ble_advertising.h"
 #include "nrf_ble_scan.h"
-// #include "boards.h"
-// #include "nrf_log.h"
-// #include "nrf_log_ctrl.h"
-// #include "nrf_log_default_backends.h"
-#include "espar_driver.h"
 #include "nrf.h"
 #include "nrf_log.h"
 #include "nrf_log_ctrl.h"
@@ -17,6 +12,7 @@
 #include "nrf_sdh_ble.h"
 #include "nrf_sdh_soc.h"
 #include "nrfx_timer.h"
+#include "espar_driver.h"
 #include "radio.h"
 #include "usb_serial.h"
 #include <inttypes.h>
@@ -28,7 +24,7 @@
 #include "espar_genetic.h"
 #endif
 
-#define MASTER_WDT_TIMEOUT_MS 2000
+#define MASTER_WDT_TIMEOUT_MS 100
 
 static bool master_enabled = false;
 bool espar_run = false;
@@ -101,8 +97,11 @@ uint32_t batch_first_packet = 0;
 void next_batch()
 {
 	double bper;
-	uint32_t batch_packet_diff =
-	    last_packet_number - batch_first_packet + 1;
+	uint32_t batch_packet_diff;
+
+	master_stop();
+
+	batch_packet_diff = last_packet_number - batch_first_packet + 1;
 	if (batch_number) {
 		if (!batch_packets_received || !batch_packet_diff)
 			bper = 1;
@@ -121,10 +120,12 @@ void next_batch()
 	batch_packets_received = 0;
 	batch_first_packet = 0;
 	if (present_espar_char >= (1 << 12) - 1) {
-		master_stop();
+		// If last characteristic was reached, finish receiving task
+		return;
 	} else {
 		present_espar_char = get_next_char();
 		set_char(present_espar_char);
+		master_start();
 	}
 }
 
@@ -188,7 +189,8 @@ void master_packet_handler(struct radio_packet_t received)
 		// batch_number = last_packet_number / BATCH_SIZE;
 		next_batch();
 	}
-	/* brute force end */
+	/* brute force end */htop
+	
 
 	// NRF_LOG_INFO(
 	//     "RSSI: %d, PR: %u, LP: %u,  PER: " NRF_LOG_FLOAT_MARKER,

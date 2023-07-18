@@ -6,9 +6,10 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import numpy as np
 import math
+from pathlib import Path
 
 
-BATCH_SIZE = 10
+BATCH_SIZE = 100
 
 
 def colors_from_values(values, palette_name):
@@ -68,7 +69,7 @@ batch_df = pd.DataFrame(batches, columns=["pr"])
 df.lp = df.lp.div(BATCH_SIZE)
 
 fig, axs = plt.subplots(
-    2, 1, figsize=(8, 6), sharex=True, gridspec_kw=dict(height_ratios=[0.5, 3])
+    2, 1, figsize=(16, 9), sharex=True, gridspec_kw=dict(height_ratios=[0.5, 3])
 )
 per_plot = sns.lineplot(ax=axs[0], data=df, x="lp", y="per", color="darkred")
 per_plot.set(ylabel="Packet Error Rate [%]", title="Cumulative Packet Error Rate")
@@ -83,5 +84,5 @@ lost_plot.set(ylabel='Cumulative Packet Lost', ylim = [0, df.lost.iat[-1]*1.1])
 new_ticks = [i.get_text() for i in batched_plot.get_xticklabels()]
 plt.xticks(range(0, len(new_ticks), 10), new_ticks[::10])
 ax2.legend(loc='upper right', frameon = False)
-fig.savefig("test.svg", format = "svg")
+fig.savefig(f"{Path(filename).stem}.png", format = "png")
 plt.show()

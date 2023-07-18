@@ -24,9 +24,12 @@
 					     given channel in the IEEE         \
 					     802.15.4 radio mode. */
 
+enum radio_state { RADIO_RECEIVING, RADIO_TRANSMITTING, RADIO_IDLE };
+
 struct radio_config_t {
 	void (*rx_handler)(struct radio_packet_t);
 	void (*tx_handler)(struct radio_packet_t *);
+	enum radio_state state;
 };
 static volatile struct radio_config_t radio_config = {0};
 
@@ -46,55 +49,7 @@ void radio_disable(void)
 		/* Do nothing */
 	}
 	nrf_radio_event_clear(NRF_RADIO_EVENT_DISABLED);
-}
-
-/**@brief Function for reading packet.
- */
-struct radio_packet_t read_packet()
-{
-	struct radio_packet_t result = {0};
-
-	radio_disable();
-	NRF_RADIO->EVENTS_READY = 0U;
-	NRF_RADIO->SHORTS |= RADIO_SHORTS_ADDRESS_RSSISTART_Msk;
-	// Enable radio and wait for ready
-	NRF_RADIO->TASKS_RXEN = 1U;
-
-	while (NRF_RADIO->EVENTS_READY == 0U) {
-		// wait
-	}
-	NRF_RADIO->EVENTS_END = 0U;
-	// Start listening and wait for address received event
-	NRF_RADIO->TASKS_START = 1U;
-
-	uint32_t ticks = 0;
-	uint32_t timeout = 5000000;
-	// Wait for end of packet or buttons state changed
-	while (NRF_RADIO->EVENTS_END == 0U) {
-		ticks++;
-		if (ticks > timeout) {
-			goto read_packet_exit;
-		}
-		// wait
-	}
-
-	if (NRF_RADIO->CRCSTATUS == 1U) {
-		result.data = *((uint32_t *)NRF_RADIO->PACKETPTR);
-		result.rssi = NRF_RADIO->RSSISAMPLE;
-		// result = packet;
-	} else {
-		result.data = 0xffffffff;
-	}
-read_packet_exit:
-	radio_disable();
-	/* NRF_RADIO->EVENTS_DISABLED = 0U;
-	// Disable radio
-	NRF_RADIO->TASKS_DISABLE = 1U;
-
-	while (NRF_RADIO->EVENTS_DISABLED == 0U) {
-		// wait
-	} */
-	return result;
+	radio_config.state = RADIO_IDLE;
 }
 
 void send_packet(uint32_t packet_to_send)
@@ -102,6 +57,7 @@ void send_packet(uint32_t packet_to_send)
 	radio_disable();
 	packet = packet_to_send;
 	// send the packet:
+	radio_config.state = RADIO_TRANSMITTING;
 	NRF_RADIO->EVENTS_READY = 0U;
 	NRF_RADIO->TASKS_TXEN = 1;
 
@@ -160,12 +116,12 @@ void radio_unmodulated_tx_carrier(uint8_t txpower, uint8_t channel)
 
 static void radio_start(bool rx)
 {
+	radio_config.state = rx ? RADIO_RECEIVING : RADIO_TRANSMITTING;
 	nrf_radio_task_trigger(rx ? NRF_RADIO_TASK_RXEN : NRF_RADIO_TASK_TXEN);
 }
 
 void radio_rx(void (*packet_handler)(struct radio_packet_t))
 {
-	NRF_LOG_INFO("RADIO RX STARTED")
 	radio_disable();
 
 	nrf_radio_shorts_enable(NRF_RADIO_SHORT_READY_START_MASK |
@@ -183,8 +139,6 @@ void radio_tx(void (*packet_handler)(struct radio_packet_t *))
 	radio_disable();
 	packet = 0;
 
-	// tx_packet_cnt = 0;
-
 	nrf_radio_shorts_enable(NRF_RADIO_SHORT_READY_START_MASK |
 				NRF_RADIO_SHORT_END_START_MASK);
 
@@ -193,21 +147,6 @@ void radio_tx(void (*packet_handler)(struct radio_packet_t *))
 	nrf_radio_int_enable(NRF_RADIO_INT_END_MASK);
 
 	radio_start(false);
-
-	// // send the packet:
-	// NRF_RADIO->EVENTS_READY = 0U;
-	// NRF_RADIO->TASKS_TXEN = 1;
-
-	// while (NRF_RADIO->EVENTS_READY == 0U) {
-	// 	// wait
-	// }
-	// NRF_RADIO->EVENTS_END = 0U;
-	// NRF_RADIO->TASKS_START = 1U;
-
-	// while (NRF_RADIO->EVENTS_END == 0U) {
-	// 	// wait
-	// }
-	// radio_disable();
 }
 
 void radio_init()
@@ -234,16 +173,22 @@ void RADIO_IRQHandler(void)
 	struct radio_packet_t tx_packet;
 	struct radio_packet_t rx_packet;
 	if (nrf_radio_event_check(NRF_RADIO_EVENT_CRCOK)) {
-		nrf_radio_event_clear(NRF_RADIO_EVENT_CRCOK);
-		rx_packet.data = *((uint32_t *)nrf_radio_packetptr_get());
-		rx_packet.rssi = nrf_radio_rssi_sample_get();
-		radio_config.rx_handler(rx_packet);
+		if (radio_config.state == RADIO_RECEIVING) {
+			nrf_radio_event_clear(NRF_RADIO_EVENT_CRCOK);
+			rx_packet.data =
+			    *((uint32_t *)nrf_radio_packetptr_get());
+			rx_packet.rssi = nrf_radio_rssi_sample_get();
+			radio_config.rx_handler(rx_packet);
+		}
 	}
 	if (nrf_radio_event_check(NRF_RADIO_EVENT_END)) {
-		nrf_radio_event_clear(NRF_RADIO_EVENT_END);
-		tx_packet.data = *((uint32_t *)nrf_radio_packetptr_get());
-		tx_packet.rssi = nrf_radio_rssi_sample_get();
-		radio_config.tx_handler(&tx_packet);
-		*(uint32_t *)nrf_radio_packetptr_get() = tx_packet.data;
+		if (radio_config.state == RADIO_TRANSMITTING) {
+			nrf_radio_event_clear(NRF_RADIO_EVENT_END);
+			tx_packet.data =
+			    *((uint32_t *)nrf_radio_packetptr_get());
+			tx_packet.rssi = nrf_radio_rssi_sample_get();
+			radio_config.tx_handler(&tx_packet);
+			*(uint32_t *)nrf_radio_packetptr_get() = tx_packet.data;
+		}
 	}
 }

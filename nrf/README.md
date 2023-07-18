@@ -59,7 +59,5 @@ resetting and flashing a dongle
 
 ESPAR board programming:
 ```
-nrfjprog --family NRF52 --recover
-nrfjprog --family NRF52 --program pca10056/armgcc/_build/nrf52840_xxaa.hex
-nrfjprog --family NRF52 --reset
+nrfjprog --family NRF52 --recover && nrfjprog --family NRF52 --program pca10056/armgcc/_build/nrf52840_xxaa.hex && nrfjprog --family NRF52 --reset
 ```

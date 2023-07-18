@@ -13,7 +13,7 @@
 		{
 			"label": "Build DUT software",
 			"type": "shell",
-			"command": "docker run -v ${workspaceFolder}:/root/nrf5_sdk/examples/nrf ${config:docker_image} make -C /root/nrf5_sdk/examples/${workspaceFolderBasename} build",
+			"command": "docker run -v ${workspaceFolder}:/root/nrf5_sdk/examples/nrf ${config:docker_image} make -C /root/nrf5_sdk/examples/${workspaceFolderBasename} build_dongle",
 			"dependsOn": [
 				"Build docker"
 			],

@@ -14,5 +14,6 @@
                 "fds.h": "c",
                 "jammer.h": "c",
                 "nrf_radio.h": "c"
-        }
+        },
+        "C_Cpp.default.compilerPath": "/usr/bin/arm-none-eabi-gcc"
 }
