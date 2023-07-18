@@ -11,17 +11,32 @@
 			}
 		},
 		{
-			"label": "Build DUT software",
+			"label": "Build beacon software",
 			"type": "shell",
-			"command": "docker run -v ${workspaceFolder}:/root/nrf5_sdk/examples/nrf ${config:docker_image} make -C /root/nrf5_sdk/examples/${workspaceFolderBasename} build_dongle",
+			"command": "docker run -v ${workspaceFolder}:/root/nrf5_sdk/examples/${workspaceFolderBasename} ${config:docker_image} make -C /root/nrf5_sdk/examples/${workspaceFolderBasename} build_dongle",
 			"dependsOn": [
 				"Build docker"
 			],
 			"problemMatcher": [],
+			"group": "build"
+		},
+		{
+			"label": "Build ESPAR software",
+			"type": "shell",
+			"command": "docker run -v ${workspaceFolder}:/root/nrf5_sdk/examples/${workspaceFolderBasename} ${config:docker_image} make -C /root/nrf5_sdk/examples/${workspaceFolderBasename} build_espar",
+			"dependsOn": [
+				"Build docker"
+			],
+			"problemMatcher": [],
+			"group": "build"
+		},
+		{
+			"label": "Build",
 			"group": {
-				"kind": "build",
-				"isDefault": true
-			}
-		}
+                "kind": "build",
+                "isDefault": true
+            },
+			"dependsOn": ["Build ESPAR software", "Build beacon software"]
+		  }
 	]
 }

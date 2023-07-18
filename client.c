@@ -1,23 +1,11 @@
 #include "client.h"
 
-#include "app_button.h"
 #include "app_error.h"
 #include "app_timer.h"
-#include "ble.h"
-#include "ble_advdata.h"
-#include "ble_conn_params.h"
-#include "ble_err.h"
-#include "ble_hci.h"
-#include "ble_lbs.h"
-#include "ble_srv_common.h"
 #include "boards.h"
 #include "nordic_common.h"
 #include "nrf.h"
-#include "nrf_ble_gatt.h"
-#include "nrf_ble_qwr.h"
 #include "nrf_pwr_mgmt.h"
-#include "nrf_sdh.h"
-#include "nrf_sdh_ble.h"
 #include <stdint.h>
 #include <string.h>
 

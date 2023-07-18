@@ -1,11 +1,7 @@
-#include "ant_interface.h"
-#include "ant_parameters.h"
 #include "app_error.h"
 #include "boards.h"
 #include "hardfault.h"
 #include "nrf_pwr_mgmt.h"
-#include "nrf_sdh.h"
-#include "nrf_sdh_ant.h"
 #include "nrf_soc.h"
 #include "sdk_config.h"
 
