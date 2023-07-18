@@ -39,12 +39,12 @@ make flash
 
 ## Control
 
-To control DUT use `dut_ctrl.py`
+To control DUT use `scripts/dut_ctrl.py`
 
 For usage instructions run:
 
 ```bash
-./dut_ctrl.py --help
+./scripts/dut_ctrl.py --help
 ```
 
 
@@ -52,7 +52,7 @@ For usage instructions run:
 
 resetting and flashing a dongle
 ```
-./dut_ctrl.py /dev/ttyACM1 reset && ~/.nrfutil/bin/nrfutil dfu usb-serial -pkg pca10059/armgcc/_build/dfu.zip -p /dev/ttyACM1 -b 115200
+./scripts/dut_ctrl.py /dev/ttyACM1 reset && ~/.nrfutil/bin/nrfutil dfu usb-serial -pkg pca10059/armgcc/_build/dfu.zip -p /dev/ttyACM1 -b 115200
 ```
 
 
