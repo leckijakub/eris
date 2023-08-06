@@ -6,6 +6,7 @@
 #include "nrf_log_default_backends.h"
 #include "nrf_radio.h"
 #include "nrfx_timer.h"
+#include "nrf_drv_rng.h"
 #include "espar_driver.h"
 #include "radio.h"
 #include "usb_serial.h"
@@ -13,12 +14,13 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
+#include "limits.h"
 
 #ifdef ESPAR_GENETIC
 #include "espar_genetic.h"
 #endif
 
-#define MASTER_WDT_TIMEOUT_MS 100
+#define MASTER_WDT_TIMEOUT_MS 10
 
 static bool master_enabled = false;
 bool espar_run = false;
@@ -54,6 +56,21 @@ const char *espar_char_as_string(int16_t x)
 	return b;
 }
 
+
+/** @brief Function for getting vector of random numbers.
+ *
+ * @param[out] p_buff       Pointer to unit8_t buffer for storing the bytes.
+ * @param[in]  length       Number of bytes to take from pool and place in p_buff.
+ *
+ * @retval     Number of bytes actually placed in p_buff.
+ */
+void random_vector_generate(uint8_t * p_buff, uint8_t size)
+{
+    nrf_drv_rng_block_rand(p_buff, size);
+}
+
+// char tested_chars[4096] = {0};
+uint16_t chars_array[4096];
 uint16_t get_next_char()
 {
 #ifdef ESPAR_GENETIC
@@ -65,7 +82,7 @@ uint16_t get_next_char()
 	return next_char;
 #else
 	static uint16_t next_char = 0;
-	return next_char++;
+	return chars_array[next_char++];
 #endif
 }
 
@@ -92,7 +109,6 @@ void next_batch()
 {
 	double bper;
 	uint32_t batch_packet_diff;
-
 	master_stop();
 
 	batch_packet_diff = last_packet_number - batch_first_packet + 1;
@@ -113,7 +129,8 @@ void next_batch()
 	batch_number++;
 	batch_packets_received = 0;
 	batch_first_packet = 0;
-	if (present_espar_char >= (1 << 12) - 1) {
+	if (batch_number > 4096){
+		NRF_LOG_INFO("MASTER DONE");
 		// If last characteristic was reached, finish receiving task
 		return;
 	} else {
@@ -174,16 +191,14 @@ void master_packet_handler(struct radio_packet_t received)
 	}
 	last_packet_number = received.data;
 
-	/* brute force  */
+	/* batch finalization  */
 	if (!batch_first_packet)
 		batch_first_packet = last_packet_number;
 	batch_packets_received++;
 	if (last_packet_number - batch_first_packet + 1 >= BATCH_SIZE) {
 		/* first packet from a new batch received */
-		// batch_number = last_packet_number / BATCH_SIZE;
 		next_batch();
 	}
-	/* brute force end */
 	
 
 	// NRF_LOG_INFO(
@@ -209,6 +224,33 @@ void master_stop()
 	master_enabled = false;
 }
 
+void shuffle(uint16_t *array, size_t n)
+{
+	int rnd;
+	if (n > 1) 
+	{
+		size_t i;
+		for (i = 0; i < n - 1; i++) 
+		{
+			random_vector_generate((uint8_t*)&rnd, sizeof(int));
+			size_t j = i + rnd / (INT_MAX / (n - i) + 1);
+			int t = array[j];
+			array[j] = array[i];
+			array[i] = t;
+		}
+	}
+}
+void init_array_range(uint16_t *array, size_t size, int start, int stop){
+
+	if(size != stop - start){
+		NRF_LOG_INFO("INVALID RANGE PASSED");
+		return;
+	}
+	for(int val = start; val < stop; val++){
+		array[val-start] = val;
+	}
+}
+
 void master_init()
 {
 	radio_init();
@@ -219,6 +261,11 @@ void master_init()
 	    (NRF_TIMER_SHORT_COMPARE0_CLEAR_MASK), true);
 	nrf_radio_int_enable(NRF_RADIO_INT_CRCOK_MASK);
 	NVIC_EnableIRQ(RADIO_IRQn);
+
+	// Generate random order of characteristic
+	init_array_range(chars_array, 4096, 0, 4096);
+	shuffle(chars_array, 4096);
+
 #ifdef BOARD_DD
 	espar_init();
 	NRF_LOG_INFO("ESPAR INIT DONE");

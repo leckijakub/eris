@@ -487,7 +487,9 @@ int main(void)
 	USB_SER_PRINT("[INFO]: Log init done.\r\n");
 	err_code = nrf_pwr_mgmt_init();
 	APP_ERROR_CHECK(err_code);
-
+	err_code = nrf_drv_rng_init(NULL);
+	APP_ERROR_CHECK(err_code);
+	
 	master_init();
 	NRF_LOG_INFO("MASTER INIT DONE");
 	client_init();

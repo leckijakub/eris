@@ -163,7 +163,7 @@ void radio_init()
 	    (PACKET_BASE_ADDRESS_LENGTH << RADIO_PCNF1_BALEN_Pos) |
 	    (4 << RADIO_PCNF1_STATLEN_Pos) | (4 << RADIO_PCNF1_MAXLEN_Pos);
 
-	NRF_RADIO->FREQUENCY = 2UL; // 2402 MHz - Channel 37
+	NRF_RADIO->FREQUENCY = 80UL; // 2480 MHz - Channel 39
 	NRF_LOG_INFO("RADIO INIT DONE");
 	radio_configured = true;
 }

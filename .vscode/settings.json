@@ -13,7 +13,10 @@
                 "stdint.h": "c",
                 "fds.h": "c",
                 "jammer.h": "c",
-                "nrf_radio.h": "c"
+                "nrf_radio.h": "c",
+                "nrfx_rng.h": "c",
+                "nrf_rng.h": "c",
+                "limits.h": "c"
         },
         "C_Cpp.default.compilerPath": "/usr/bin/arm-none-eabi-gcc"
 }

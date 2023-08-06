@@ -18,7 +18,7 @@ int jammer_start(uint8_t power_level)
 		USB_SER_PRINT("Invalid power level\r\n");
 		return 0;
 	}
-	radio_unmodulated_tx_carrier(power_level, 2UL);
+	radio_unmodulated_tx_carrier(power_level, 80UL);
 	jammer_enabled = true;
 	return 1;
 }

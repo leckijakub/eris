@@ -23,7 +23,7 @@ def jam(args):
 
 
 def tx(args):
-	ser.write(b"tx\r")
+	ser.write(f"tx {args.power_lvl}\r".encode())
 
 
 def rx(args):
@@ -53,6 +53,7 @@ jam_parser.set_defaults(func=jam)
 idle_parser = subparsers.add_parser("idle", help="Set board to idle")
 idle_parser.set_defaults(func=idle)
 tx_parser = subparsers.add_parser("tx", help="Set board to tx")
+tx_parser.add_argument("power_lvl", type=int, choices=range(0,6), help="power level of transmission")
 tx_parser.set_defaults(func=tx)
 
 rx_parser = subparsers.add_parser("rx", help="Set board to rx, this action will constantly print to stdout until not terminated with SIGINT.")
