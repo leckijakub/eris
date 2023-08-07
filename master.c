@@ -15,6 +15,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "limits.h"
+#include <float.h>
 
 #ifdef ESPAR_GENETIC
 #include "espar_genetic.h"
@@ -28,6 +29,16 @@ bool espar_run = false;
 struct espar_gen_ctx eg_ctx;
 #endif
 static const nrfx_timer_t master_timer = NRFX_TIMER_INSTANCE(0);
+
+uint32_t last_packet_number = 0;
+uint32_t packets_received = 0;
+#define BATCH_SIZE 100
+uint32_t batch_number = 0;
+uint16_t present_espar_char;
+uint32_t batch_packets_received = 0;
+uint32_t batch_first_packet = 0;
+uint16_t chars_array[4096];
+
 void espar_start()
 {
 	espar_run = 1;
@@ -60,17 +71,14 @@ const char *espar_char_as_string(int16_t x)
 /** @brief Function for getting vector of random numbers.
  *
  * @param[out] p_buff       Pointer to unit8_t buffer for storing the bytes.
- * @param[in]  length       Number of bytes to take from pool and place in p_buff.
+ * @param[in]  size       Number of bytes to take from pool and place in p_buff.
  *
- * @retval     Number of bytes actually placed in p_buff.
  */
 void random_vector_generate(uint8_t * p_buff, uint8_t size)
 {
     nrf_drv_rng_block_rand(p_buff, size);
 }
 
-// char tested_chars[4096] = {0};
-uint16_t chars_array[4096];
 uint16_t get_next_char()
 {
 #ifdef ESPAR_GENETIC
@@ -86,6 +94,7 @@ uint16_t get_next_char()
 #endif
 }
 
+
 void record_char_rssi(uint16_t espar_char, int8_t rssi)
 {
 #ifdef ESPAR_GENETIC
@@ -97,14 +106,8 @@ void record_char_rssi(uint16_t espar_char, int8_t rssi)
 
 bool espar_finish() { return false; }
 
-uint32_t last_packet_number = 0;
-uint32_t packets_received = 0;
-#define BATCH_SIZE 100
-uint32_t batch_number = 0;
-uint16_t present_espar_char;
-uint32_t batch_packets_received = 0;
-uint32_t batch_first_packet = 0;
-
+uint16_t best_char = 0;
+double best_char_bper = DBL_MAX;
 void next_batch()
 {
 	double bper;
@@ -125,19 +128,27 @@ void next_batch()
 			     batch_number,
 			     espar_char_as_string(present_espar_char),
 			     batch_packets_received, NRF_LOG_FLOAT(bper));
+
+		if(bper < best_char_bper){
+			best_char = present_espar_char;
+			best_char_bper = bper;
+		}
+		if (present_espar_char == best_char){
+			best_char_bper = bper;
+		}
 	}
 	batch_number++;
 	batch_packets_received = 0;
 	batch_first_packet = 0;
-	if (batch_number > 4096){
-		NRF_LOG_INFO("MASTER DONE");
+	if (best_char_bper <= 0.20){
+		present_espar_char = best_char;
 		// If last characteristic was reached, finish receiving task
-		return;
+		// return;
 	} else {
 		present_espar_char = get_next_char();
-		set_char(present_espar_char);
-		master_start();
 	}
+	set_char(present_espar_char);
+	master_start();
 }
 
 void master_handler(void) {}
