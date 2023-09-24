@@ -104,8 +104,6 @@ void record_char_rssi(uint16_t espar_char, int8_t rssi)
 #endif
 }
 
-bool espar_finish() { return false; }
-
 uint16_t best_char = 0;
 double best_char_bper = DBL_MAX;
 void next_batch()
@@ -123,31 +121,43 @@ void next_batch()
 					batch_packets_received) /
 			       batch_packet_diff;
 		}
-		NRF_LOG_INFO("[BATCH %u SUMMARY]: ESPAR CHAR: %s, BPR: %u, "
+#ifdef BOARD_DD // ESPAR
+		NRF_LOG_INFO("[BATCH %lu SUMMARY]: ESPAR CHAR: %s, BPR: %lu, "
 			     "BPER: " NRF_LOG_FLOAT_MARKER,
 			     batch_number,
 			     espar_char_as_string(present_espar_char),
 			     batch_packets_received, NRF_LOG_FLOAT(bper));
 
+		// update best char
 		if(bper < best_char_bper){
 			best_char = present_espar_char;
 			best_char_bper = bper;
 		}
+		// update best char bper
 		if (present_espar_char == best_char){
 			best_char_bper = bper;
 		}
+		// use best char if bper lower than 0.20
+		if (best_char_bper <= 0.20){
+			present_espar_char = best_char;
+		} else {
+			present_espar_char = get_next_char();
+		}
+		set_char(present_espar_char);
+#else // BEACON
+		// print only one of 100 batches as USB serial throughput is limited
+		if(batch_number % 100 == 0){
+		USB_SER_PRINT("[BATCH %lu SUMMARY]: BPR: %lu, "
+			     "BPER: " NRF_LOG_FLOAT_MARKER "\r\n",
+			     batch_number,
+			     batch_packets_received, NRF_LOG_FLOAT(bper));
+		}
+#endif
 	}
+
 	batch_number++;
 	batch_packets_received = 0;
 	batch_first_packet = 0;
-	if (best_char_bper <= 0.20){
-		present_espar_char = best_char;
-		// If last characteristic was reached, finish receiving task
-		// return;
-	} else {
-		present_espar_char = get_next_char();
-	}
-	set_char(present_espar_char);
 	master_start();
 }
 
