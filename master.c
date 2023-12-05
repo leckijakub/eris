@@ -36,6 +36,7 @@ uint32_t packets_received = 0;
 uint32_t batch_number = 0;
 uint16_t present_espar_char;
 uint32_t batch_packets_received = 0;
+uint32_t batch_rssi_sum = 0;
 uint32_t batch_first_packet = 0;
 uint16_t chars_array[4096];
 
@@ -110,23 +111,28 @@ void next_batch()
 {
 	double bper;
 	uint32_t batch_packet_diff;
+	double batch_rssi_avg;
 	master_stop();
 
 	batch_packet_diff = last_packet_number - batch_first_packet + 1;
 	if (batch_number) {
-		if (!batch_packets_received || !batch_packet_diff)
+		if (!batch_packets_received || !batch_packet_diff){
 			bper = 1;
+			batch_rssi_avg = 0;
+		}
 		else {
 			bper = (double)(batch_packet_diff -
 					batch_packets_received) /
 			       batch_packet_diff;
+			batch_rssi_avg = -(double)(batch_rssi_sum) / batch_packets_received;
 		}
 #ifdef BOARD_DD // ESPAR
-		NRF_LOG_INFO("[BATCH %lu SUMMARY]: ESPAR CHAR: %s, BPR: %lu, "
-			     "BPER: " NRF_LOG_FLOAT_MARKER,
+		NRF_LOG_INFO("[BATCH %lu SUMMARY]: ESPAR CHAR: %s, "
+			     "BPER: " NRF_LOG_FLOAT_MARKER ", RSSI: %ld",
 			     batch_number,
 			     espar_char_as_string(present_espar_char),
-			     batch_packets_received, NRF_LOG_FLOAT(bper));
+			     //  batch_packets_received,
+			     NRF_LOG_FLOAT(bper), batch_rssi_avg);
 
 		// update best char
 		if(bper < best_char_bper){
@@ -147,10 +153,11 @@ void next_batch()
 #else // BEACON
 		// print only one of 100 batches as USB serial throughput is limited
 		if(batch_number % 100 == 0){
-		USB_SER_PRINT("[BATCH %lu SUMMARY]: BPR: %lu, "
-			     "BPER: " NRF_LOG_FLOAT_MARKER "\r\n",
-			     batch_number,
-			     batch_packets_received, NRF_LOG_FLOAT(bper));
+			USB_SER_PRINT("[BATCH %lu SUMMARY]: BPR: %lu, "
+				      "BPER: " NRF_LOG_FLOAT_MARKER
+				      ", RSSI: "NRF_LOG_FLOAT_MARKER"\r\n",
+				      batch_number, batch_packets_received,
+				      NRF_LOG_FLOAT(bper), NRF_LOG_FLOAT(batch_rssi_avg));
 		}
 #endif
 	}
@@ -158,6 +165,7 @@ void next_batch()
 	batch_number++;
 	batch_packets_received = 0;
 	batch_first_packet = 0;
+	batch_rssi_sum = 0;
 	master_start();
 }
 
@@ -201,26 +209,27 @@ void master_packet_handler(struct radio_packet_t received)
 		return;
 	}
 
-	packets_received++;
-
 	if (received.data < last_packet_number) {
 		/* if received smaller value than last time, then asume new
 		 * package set is started */
-		packets_received = 1;
-		batch_packets_received = 1;
+		packets_received = 0;
+		batch_packets_received = 0;
+		batch_rssi_sum = 0;
 		batch_first_packet = 0;
 	}
+
+	packets_received++;
 	last_packet_number = received.data;
+	batch_packets_received++;
+	batch_rssi_sum += received.rssi;
 
 	/* batch finalization  */
 	if (!batch_first_packet)
 		batch_first_packet = last_packet_number;
-	batch_packets_received++;
 	if (last_packet_number - batch_first_packet + 1 >= BATCH_SIZE) {
 		/* first packet from a new batch received */
 		next_batch();
 	}
-	
 
 	// NRF_LOG_INFO(
 	//     "RSSI: %d, PR: %u, LP: %u,  PER: " NRF_LOG_FLOAT_MARKER,
@@ -248,10 +257,10 @@ void master_stop()
 void shuffle(uint16_t *array, size_t n)
 {
 	int rnd;
-	if (n > 1) 
+	if (n > 1)
 	{
 		size_t i;
-		for (i = 0; i < n - 1; i++) 
+		for (i = 0; i < n - 1; i++)
 		{
 			random_vector_generate((uint8_t*)&rnd, sizeof(int));
 			size_t j = i + rnd / (INT_MAX / (n - i) + 1);
