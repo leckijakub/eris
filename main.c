@@ -105,6 +105,7 @@ enum espar_cmd {
 	ESPAR_CMD_UNKNOWN,
 	ESPAR_CMD_TX,
 	ESPAR_CMD_RX,
+	ESPAR_CMD_STATUS,
 };
 
 void print_help()
@@ -133,6 +134,8 @@ enum espar_cmd parse_cmd(char *cmd_buf, size_t cmd_size)
 		return ESPAR_CMD_RESET;
 	} else if (!strncmp("rx", cmd_buf, cmd_size)) {
 		return ESPAR_CMD_RX;
+	} else if (!strncmp("status", cmd_buf, cmd_size)) {
+		return ESPAR_CMD_STATUS;
 	}
 
 	return ESPAR_CMD_UNKNOWN;
@@ -237,6 +240,9 @@ void input_handler(char *input_buff, size_t input_size)
 			break;
 		case ESPAR_CMD_IDLE:
 			dut_set_state(DUT_STATE_IDLE, arg);
+			break;
+		case ESPAR_CMD_STATUS:
+			USB_SER_PRINT("DUT state: %d\r\n", present_state);
 			break;
 		case ESPAR_CMD_RESET:
 			USB_SER_PRINT("Resetting to bootloader\r\n");
