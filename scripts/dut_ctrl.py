@@ -62,7 +62,7 @@ def parse_args():
 	write_parser.add_argument("command", default="", help="command to write")
 	write_parser.set_defaults(func=write)
 
-	args = parser.parse_args()
+	return parser.parse_args()
 
 
 if __name__ == "__main__":

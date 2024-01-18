@@ -33,12 +33,14 @@ static const nrfx_timer_t master_timer = NRFX_TIMER_INSTANCE(0);
 uint32_t last_packet_number = 0;
 uint32_t packets_received = 0;
 #define BATCH_SIZE 100
+#define BPER_THRESHOLD 0.20
+#define CHAR_MAX_COMB 4096 // 2^12 max combinations of passive characteristics
 uint32_t batch_number = 0;
 uint16_t present_espar_char;
 uint32_t batch_packets_received = 0;
 uint32_t batch_rssi_sum = 0;
 uint32_t batch_first_packet = 0;
-uint16_t chars_array[4096];
+uint16_t chars_array[CHAR_MAX_COMB];
 
 void espar_start()
 {
@@ -91,6 +93,7 @@ uint16_t get_next_char()
 	return next_char;
 #else
 	static uint16_t next_char = 0;
+	next_char = next_char % CHAR_MAX_COMB;
 	return chars_array[next_char++];
 #endif
 }
@@ -127,12 +130,14 @@ void next_batch()
 			batch_rssi_avg = -(double)(batch_rssi_sum) / batch_packets_received;
 		}
 #ifdef BOARD_DD // ESPAR
-		NRF_LOG_INFO("[BATCH %lu SUMMARY]: ESPAR CHAR: %s, "
-			     "BPER: " NRF_LOG_FLOAT_MARKER ", RSSI: %ld",
+		char msg[512];
+		snprintf(msg, 512, "[BATCH %lu SUMMARY]: ESPAR CHAR: %s, "
+			     "BPER: " NRF_LOG_FLOAT_MARKER ", RSSI: " NRF_LOG_FLOAT_MARKER,
 			     batch_number,
 			     espar_char_as_string(present_espar_char),
-			     //  batch_packets_received,
-			     NRF_LOG_FLOAT(bper), batch_rssi_avg);
+			     NRF_LOG_FLOAT(bper), NRF_LOG_FLOAT(batch_rssi_avg));
+		NRF_LOG_INFO("%s", msg);
+
 
 		// update best char
 		if(bper < best_char_bper){
@@ -144,7 +149,7 @@ void next_batch()
 			best_char_bper = bper;
 		}
 		// use best char if bper lower than 0.20
-		if (best_char_bper <= 0.20){
+		if (best_char_bper <= BPER_THRESHOLD){
 			present_espar_char = best_char;
 		} else {
 			present_espar_char = get_next_char();
@@ -263,7 +268,8 @@ void shuffle(uint16_t *array, size_t n)
 		for (i = 0; i < n - 1; i++)
 		{
 			random_vector_generate((uint8_t*)&rnd, sizeof(int));
-			size_t j = i + rnd / (INT_MAX / (n - i) + 1);
+			// size_t j = i + rnd / (INT_MAX / (n - i) + 1);
+			size_t j = i + rnd % (n - i);
 			int t = array[j];
 			array[j] = array[i];
 			array[i] = t;
@@ -293,8 +299,8 @@ void master_init()
 	NVIC_EnableIRQ(RADIO_IRQn);
 
 	// Generate random order of characteristic
-	init_array_range(chars_array, 4096, 0, 4096);
-	shuffle(chars_array, 4096);
+	init_array_range(chars_array, CHAR_MAX_COMB, 0, CHAR_MAX_COMB);
+	shuffle(chars_array, CHAR_MAX_COMB);
 
 #ifdef BOARD_DD
 	espar_init();
