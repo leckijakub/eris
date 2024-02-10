@@ -72,7 +72,6 @@ SRC_FILES += \
   $(PROJ_DIR)/master.c \
   $(PROJ_DIR)/jammer.c \
   $(PROJ_DIR)/driver.espar/espar_driver.c \
-  $(PROJ_DIR)/espar_genetic.c
 
 # Include folders common to all targets
 INC_FOLDERS += \
@@ -232,7 +231,6 @@ CFLAGS += -DUSE_APP_CONFIG
 CFLAGS += -mcpu=cortex-m4
 CFLAGS += -mthumb -mabi=aapcs
 CFLAGS += -Wall
-# CFLAGS += -DESPAR_GENETIC
 #-Werror
 CFLAGS += -mfloat-abi=hard -mfpu=fpv4-sp-d16
 # keep every function in a separate section, this allows linker to discard unused ones

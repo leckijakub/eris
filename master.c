@@ -17,17 +17,11 @@
 #include "limits.h"
 #include <float.h>
 
-#ifdef ESPAR_GENETIC
-#include "espar_genetic.h"
-#endif
 
 #define MASTER_WDT_TIMEOUT_MS 10
 
 static bool master_enabled = false;
 bool espar_run = false;
-#ifdef ESPAR_GENETIC
-struct espar_gen_ctx eg_ctx;
-#endif
 static const nrfx_timer_t master_timer = NRFX_TIMER_INSTANCE(0);
 
 uint32_t last_packet_number = 0;
@@ -41,6 +35,8 @@ uint32_t batch_packets_received = 0;
 uint32_t batch_rssi_sum = 0;
 uint32_t batch_first_packet = 0;
 uint16_t chars_array[CHAR_MAX_COMB];
+uint16_t best_char = 0;
+double best_char_bper = DBL_MAX;
 
 void espar_start()
 {
@@ -70,7 +66,6 @@ const char *espar_char_as_string(int16_t x)
 	return b;
 }
 
-
 /** @brief Function for getting vector of random numbers.
  *
  * @param[out] p_buff       Pointer to unit8_t buffer for storing the bytes.
@@ -84,32 +79,11 @@ void random_vector_generate(uint8_t * p_buff, uint8_t size)
 
 uint16_t get_next_char()
 {
-#ifdef ESPAR_GENETIC
-	uint16_t next_char = espar_gen_next_genome_to_eval(&eg_ctx);
-	while (next_char == EG_INVALID_GENOME) {
-		espar_gen_next_generation(&eg_ctx);
-		next_char = espar_gen_next_genome_to_eval(&eg_ctx);
-	}
-	return next_char;
-#else
 	static uint16_t next_char = 0;
 	next_char = next_char % CHAR_MAX_COMB;
 	return chars_array[next_char++];
-#endif
 }
 
-
-void record_char_rssi(uint16_t espar_char, int8_t rssi)
-{
-#ifdef ESPAR_GENETIC
-	espar_gen_record_fitness(&eg_ctx, espar_char, rssi);
-#else
-	return;
-#endif
-}
-
-uint16_t best_char = 0;
-double best_char_bper = DBL_MAX;
 void next_batch()
 {
 	double bper;
@@ -202,6 +176,10 @@ static void master_timer_init()
 	if (err != NRFX_SUCCESS) {
 		NRF_LOG_INFO("nrfx_timer_init failed with: %d\n", err);
 	}
+	nrfx_timer_extended_compare(
+	&master_timer, NRF_TIMER_CC_CHANNEL0,
+	nrfx_timer_ms_to_ticks(&master_timer, MASTER_WDT_TIMEOUT_MS),
+	(NRF_TIMER_SHORT_COMPARE0_CLEAR_MASK), true);
 }
 
 void master_packet_handler(struct radio_packet_t received)
@@ -291,10 +269,6 @@ void master_init()
 {
 	radio_init();
 	master_timer_init();
-	nrfx_timer_extended_compare(
-	    &master_timer, NRF_TIMER_CC_CHANNEL0,
-	    nrfx_timer_ms_to_ticks(&master_timer, MASTER_WDT_TIMEOUT_MS),
-	    (NRF_TIMER_SHORT_COMPARE0_CLEAR_MASK), true);
 	nrf_radio_int_enable(NRF_RADIO_INT_CRCOK_MASK);
 	NVIC_EnableIRQ(RADIO_IRQn);
 
@@ -308,9 +282,5 @@ void master_init()
 	espar_start();
 	present_espar_char = 0;
 	NRF_LOG_INFO("ESPAR START DONE");
-#ifdef ESPAR_GENETIC
-	espar_gen_init(&eg_ctx);
-	NRF_LOG_INFO("ESPAR GENETIC INIT DONE");
-#endif
 #endif
 }
