@@ -23,7 +23,8 @@ static bool client_enabled = false;
 static uint32_t packet;
 static const nrfx_timer_t client_timer = NRFX_TIMER_INSTANCE(1);
 
-void client_packet_handler(struct radio_packet_t* packet){
+void client_packet_handler(struct radio_packet_t *packet)
+{
 	packet->data++;
 }
 
@@ -66,10 +67,10 @@ static void client_timer_init()
 {
 	nrfx_err_t err;
 	nrfx_timer_config_t timer_cfg = {
-	    .frequency = NRF_TIMER_FREQ_1MHz,
-	    .mode = NRF_TIMER_MODE_TIMER,
-	    .bit_width = NRF_TIMER_BIT_WIDTH_24,
-	    .p_context = NULL,
+		.frequency = NRF_TIMER_FREQ_1MHz,
+		.mode = NRF_TIMER_MODE_TIMER,
+		.bit_width = NRF_TIMER_BIT_WIDTH_24,
+		.p_context = NULL,
 	};
 
 	err = nrfx_timer_init(&client_timer, &timer_cfg, client_timer_handler);
@@ -96,8 +97,9 @@ void client_init(void)
 {
 	radio_init();
 	client_timer_init();
-	nrfx_timer_extended_compare(&client_timer, NRF_TIMER_CC_CHANNEL0,
-				    nrfx_timer_ms_to_ticks(&client_timer, CLIENT_PACKET_INTERVAL_MS),
-				    (NRF_TIMER_SHORT_COMPARE0_CLEAR_MASK),
-				    true);
+	nrfx_timer_extended_compare(
+		&client_timer, NRF_TIMER_CC_CHANNEL0,
+		nrfx_timer_ms_to_ticks(&client_timer,
+				       CLIENT_PACKET_INTERVAL_MS),
+		(NRF_TIMER_SHORT_COMPARE0_CLEAR_MASK), true);
 }

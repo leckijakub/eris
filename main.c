@@ -93,9 +93,15 @@ int rx_stop()
 	return 1;
 }
 
-static void leds_init(void) { bsp_board_init(BSP_INIT_LEDS); }
+static void leds_init(void)
+{
+	bsp_board_init(BSP_INIT_LEDS);
+}
 
-static inline void reset_to_bootloader() { nrf_gpio_cfg_output(19); }
+static inline void reset_to_bootloader()
+{
+	nrf_gpio_cfg_output(19);
+}
 
 enum espar_cmd {
 	ESPAR_CMD_HELP,
@@ -192,7 +198,7 @@ int dut_set_state(enum dut_state state, int power_level)
 void input_handler(char *input_buff, size_t input_size)
 {
 	// struct espar_ctrl ctrl;
-	static char cmd_buff[128] = {0};
+	static char cmd_buff[128] = { 0 };
 	static char cmd_buf_size = 0;
 	char cmd[128];
 	int arg;
@@ -209,7 +215,6 @@ void input_handler(char *input_buff, size_t input_size)
 
 	// parse command if enter was pressed
 	if (cmd_buff[cmd_buf_size - 1] == '\r') {
-
 		// enable printing to serial only after first enter
 		usb_ser_enable();
 		USB_SER_PRINT("\n");
@@ -253,7 +258,7 @@ void input_handler(char *input_buff, size_t input_size)
 		default:
 			break;
 		}
-	cmd_exit:
+cmd_exit:
 		cmd_buf_size = 0;
 		USB_SER_PRINT("$ ");
 	}
@@ -282,7 +287,7 @@ void clock_initialization()
 
 	/* Start low frequency crystal oscillator for app_timer(used by bsp)*/
 	NRF_CLOCK->LFCLKSRC =
-	    (CLOCK_LFCLKSRC_SRC_Xtal << CLOCK_LFCLKSRC_SRC_Pos);
+		(CLOCK_LFCLKSRC_SRC_Xtal << CLOCK_LFCLKSRC_SRC_Pos);
 	NRF_CLOCK->EVENTS_LFCLKSTARTED = 0;
 	NRF_CLOCK->TASKS_LFCLKSTART = 1;
 

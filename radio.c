@@ -13,13 +13,13 @@
 #include "nrf_log_default_backends.h"
 
 #define RADIO_MAX_PAYLOAD_LEN 256 /**< Maximum radio RX or TX payload. */
-#define IEEE_MAX_PAYLOAD_LEN 127  /**< IEEE 802.15.4 maximum payload length. */
-#define IEEE_MIN_CHANNEL 11	  /**< IEEE 802.15.4 minimum channel. */
-#define IEEE_MAX_CHANNEL 26	  /**< IEEE 802.15.4 maximum channel. */
-#define IEEE_DEFAULT_FREQ (5)	  /**< IEEE 802.15.4 default frequency. */
-#define IEEE_FREQ_CALC(_channel)                                               \
-	(IEEE_DEFAULT_FREQ +                                                   \
-	 (IEEE_DEFAULT_FREQ *                                                  \
+#define IEEE_MAX_PAYLOAD_LEN 127 /**< IEEE 802.15.4 maximum payload length. */
+#define IEEE_MIN_CHANNEL 11 /**< IEEE 802.15.4 minimum channel. */
+#define IEEE_MAX_CHANNEL 26 /**< IEEE 802.15.4 maximum channel. */
+#define IEEE_DEFAULT_FREQ (5) /**< IEEE 802.15.4 default frequency. */
+#define IEEE_FREQ_CALC(_channel) \
+	(IEEE_DEFAULT_FREQ +     \
+	 (IEEE_DEFAULT_FREQ *    \
 	  ((_channel)-IEEE_MIN_CHANNEL))) /**< Frequency calculation for a     \
 					     given channel in the IEEE         \
 					     802.15.4 radio mode. */
@@ -31,7 +31,7 @@ struct radio_config_t {
 	void (*tx_handler)(struct radio_packet_t *);
 	enum radio_state state;
 };
-static volatile struct radio_config_t radio_config = {0};
+static volatile struct radio_config_t radio_config = { 0 };
 
 static uint32_t packet = 0xffffffff; /**< Packet to transmit. */
 static bool radio_configured = false;
@@ -158,10 +158,10 @@ void radio_init()
 	NVIC_EnableIRQ(RADIO_IRQn);
 	NRF_RADIO->PACKETPTR = (uint32_t)&packet;
 	NRF_RADIO->PCNF1 =
-	    (RADIO_PCNF1_WHITEEN_Disabled << RADIO_PCNF1_WHITEEN_Pos) |
-	    (RADIO_PCNF1_ENDIAN_Big << RADIO_PCNF1_ENDIAN_Pos) |
-	    (PACKET_BASE_ADDRESS_LENGTH << RADIO_PCNF1_BALEN_Pos) |
-	    (4 << RADIO_PCNF1_STATLEN_Pos) | (4 << RADIO_PCNF1_MAXLEN_Pos);
+		(RADIO_PCNF1_WHITEEN_Disabled << RADIO_PCNF1_WHITEEN_Pos) |
+		(RADIO_PCNF1_ENDIAN_Big << RADIO_PCNF1_ENDIAN_Pos) |
+		(PACKET_BASE_ADDRESS_LENGTH << RADIO_PCNF1_BALEN_Pos) |
+		(4 << RADIO_PCNF1_STATLEN_Pos) | (4 << RADIO_PCNF1_MAXLEN_Pos);
 
 	NRF_RADIO->FREQUENCY = 80UL; // 2480 MHz - Channel 39
 	NRF_LOG_INFO("RADIO INIT DONE");
@@ -176,7 +176,7 @@ void RADIO_IRQHandler(void)
 		if (radio_config.state == RADIO_RECEIVING) {
 			nrf_radio_event_clear(NRF_RADIO_EVENT_CRCOK);
 			rx_packet.data =
-			    *((uint32_t *)nrf_radio_packetptr_get());
+				*((uint32_t *)nrf_radio_packetptr_get());
 			rx_packet.rssi = nrf_radio_rssi_sample_get();
 			radio_config.rx_handler(rx_packet);
 		}
@@ -185,7 +185,7 @@ void RADIO_IRQHandler(void)
 		if (radio_config.state == RADIO_TRANSMITTING) {
 			nrf_radio_event_clear(NRF_RADIO_EVENT_END);
 			tx_packet.data =
-			    *((uint32_t *)nrf_radio_packetptr_get());
+				*((uint32_t *)nrf_radio_packetptr_get());
 			tx_packet.rssi = nrf_radio_rssi_sample_get();
 			radio_config.tx_handler(&tx_packet);
 			*(uint32_t *)nrf_radio_packetptr_get() = tx_packet.data;

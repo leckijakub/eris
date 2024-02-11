@@ -8,62 +8,62 @@
 static characteristic characteristics[NUMBER_OF_CHARACTERISTICS] = {
 
 #if USE_3DIR_CHARACTERISTICS
-    {{D, D, D, R, R, R, R, R, R, R, R, R}}, // Characteristic  1
-    {{R, D, D, D, R, R, R, R, R, R, R, R}}, // Characteristic  2
-    {{R, R, D, D, D, R, R, R, R, R, R, R}}, // Characteristic  3
-    {{R, R, R, D, D, D, R, R, R, R, R, R}}, // Characteristic  4
-    {{R, R, R, R, D, D, D, R, R, R, R, R}}, // Characteristic  5
-    {{R, R, R, R, R, D, D, D, R, R, R, R}}, // Characteristic  6
-    {{R, R, R, R, R, R, D, D, D, R, R, R}}, // Characteristic  7
-    {{R, R, R, R, R, R, R, D, D, D, R, R}}, // Characteristic  8
-    {{R, R, R, R, R, R, R, R, D, D, D, R}}, // Characteristic  9
-    {{R, R, R, R, R, R, R, R, R, D, D, D}}, // Characteristic 10
-    {{D, R, R, R, R, R, R, R, R, R, D, D}}, // Characteristic 11
-    {{D, D, R, R, R, R, R, R, R, R, R, D}}, // Characteristic 12
-#endif					  /* USE_3DIR_CHARACTERISTICS */
+	{ { D, D, D, R, R, R, R, R, R, R, R, R } }, // Characteristic  1
+	{ { R, D, D, D, R, R, R, R, R, R, R, R } }, // Characteristic  2
+	{ { R, R, D, D, D, R, R, R, R, R, R, R } }, // Characteristic  3
+	{ { R, R, R, D, D, D, R, R, R, R, R, R } }, // Characteristic  4
+	{ { R, R, R, R, D, D, D, R, R, R, R, R } }, // Characteristic  5
+	{ { R, R, R, R, R, D, D, D, R, R, R, R } }, // Characteristic  6
+	{ { R, R, R, R, R, R, D, D, D, R, R, R } }, // Characteristic  7
+	{ { R, R, R, R, R, R, R, D, D, D, R, R } }, // Characteristic  8
+	{ { R, R, R, R, R, R, R, R, D, D, D, R } }, // Characteristic  9
+	{ { R, R, R, R, R, R, R, R, R, D, D, D } }, // Characteristic 10
+	{ { D, R, R, R, R, R, R, R, R, R, D, D } }, // Characteristic 11
+	{ { D, D, R, R, R, R, R, R, R, R, R, D } }, // Characteristic 12
+#endif /* USE_3DIR_CHARACTERISTICS */
 #if USE_5DIR_CHARACTERISTICS
-    {{D, D, D, D, D, R, R, R, R, R, R, R}}, // Characteristic  1
-    {{R, D, D, D, D, D, R, R, R, R, R, R}}, // Characteristic  2
-    {{R, R, D, D, D, D, D, R, R, R, R, R}}, // Characteristic  3
-    {{R, R, R, D, D, D, D, D, R, R, R, R}}, // Characteristic  4
-    {{R, R, R, R, D, D, D, D, D, R, R, R}}, // Characteristic  5
-    {{R, R, R, R, R, D, D, D, D, D, R, R}}, // Characteristic  6
-    {{R, R, R, R, R, R, D, D, D, D, D, R}}, // Characteristic  7
-    {{R, R, R, R, R, R, R, D, D, D, D, D}}, // Characteristic  8
-    {{D, R, R, R, R, R, R, R, D, D, D, D}}, // Characteristic  9
-    {{D, D, R, R, R, R, R, R, R, D, D, D}}, // Characteristic 10
-    {{D, D, D, R, R, R, R, R, R, R, D, D}}, // Characteristic 11
-    {{D, D, D, D, R, R, R, R, R, R, R, D}}, // Characteristic 12
-#endif					  /* USE_5DIR_CHARACTERISTICS */
+	{ { D, D, D, D, D, R, R, R, R, R, R, R } }, // Characteristic  1
+	{ { R, D, D, D, D, D, R, R, R, R, R, R } }, // Characteristic  2
+	{ { R, R, D, D, D, D, D, R, R, R, R, R } }, // Characteristic  3
+	{ { R, R, R, D, D, D, D, D, R, R, R, R } }, // Characteristic  4
+	{ { R, R, R, R, D, D, D, D, D, R, R, R } }, // Characteristic  5
+	{ { R, R, R, R, R, D, D, D, D, D, R, R } }, // Characteristic  6
+	{ { R, R, R, R, R, R, D, D, D, D, D, R } }, // Characteristic  7
+	{ { R, R, R, R, R, R, R, D, D, D, D, D } }, // Characteristic  8
+	{ { D, R, R, R, R, R, R, R, D, D, D, D } }, // Characteristic  9
+	{ { D, D, R, R, R, R, R, R, R, D, D, D } }, // Characteristic 10
+	{ { D, D, D, R, R, R, R, R, R, R, D, D } }, // Characteristic 11
+	{ { D, D, D, D, R, R, R, R, R, R, R, D } }, // Characteristic 12
+#endif /* USE_5DIR_CHARACTERISTICS */
 #if USE_8DIR_CHARACTERISTICS
-    {{D, D, D, D, D, D, D, D, R, R, R, R}}, // Characteristic  1
-    {{R, D, D, D, D, D, D, D, D, R, R, R}}, // Characteristic  2
-    {{R, R, D, D, D, D, D, D, D, D, R, R}}, // Characteristic  3
-    {{R, R, R, D, D, D, D, D, D, D, D, R}}, // Characteristic  4
-    {{R, R, R, R, D, D, D, D, D, D, D, D}}, // Characteristic  5
-    {{D, R, R, R, R, D, D, D, D, D, D, D}}, // Characteristic  6
-    {{D, D, R, R, R, R, D, D, D, D, D, D}}, // Characteristic  7
-    {{D, D, D, R, R, R, R, D, D, D, D, D}}, // Characteristic  8
-    {{D, D, D, D, R, R, R, R, D, D, D, D}}, // Characteristic  9
-    {{D, D, D, D, D, R, R, R, R, D, D, D}}, // Characteristic 10
-    {{D, D, D, D, D, D, R, R, R, R, D, D}}, // Characteristic 11
-    {{D, D, D, D, D, D, D, R, R, R, R, D}}, // Characteristic 12
-#endif					  /* USE_8DIR_CHARACTERISTICS */
+	{ { D, D, D, D, D, D, D, D, R, R, R, R } }, // Characteristic  1
+	{ { R, D, D, D, D, D, D, D, D, R, R, R } }, // Characteristic  2
+	{ { R, R, D, D, D, D, D, D, D, D, R, R } }, // Characteristic  3
+	{ { R, R, R, D, D, D, D, D, D, D, D, R } }, // Characteristic  4
+	{ { R, R, R, R, D, D, D, D, D, D, D, D } }, // Characteristic  5
+	{ { D, R, R, R, R, D, D, D, D, D, D, D } }, // Characteristic  6
+	{ { D, D, R, R, R, R, D, D, D, D, D, D } }, // Characteristic  7
+	{ { D, D, D, R, R, R, R, D, D, D, D, D } }, // Characteristic  8
+	{ { D, D, D, D, R, R, R, R, D, D, D, D } }, // Characteristic  9
+	{ { D, D, D, D, D, R, R, R, R, D, D, D } }, // Characteristic 10
+	{ { D, D, D, D, D, D, R, R, R, R, D, D } }, // Characteristic 11
+	{ { D, D, D, D, D, D, D, R, R, R, R, D } }, // Characteristic 12
+#endif /* USE_8DIR_CHARACTERISTICS */
 };
 #elif (ESPAR_DUAL_PASSIVE)
 static characteristic characteristics[NUMBER_OF_CHARACTERISTICS] = {
-    {{D, R, R, R, R, R, D, D, R, D, R, D}}, // Characteristic  1
-    {{R, D, R, R, R, R, D, D, D, R, D, R}}, // Characteristic  2
-    {{R, R, D, R, R, R, R, D, D, D, R, D}}, // Characteristic  3
-    {{R, R, R, D, R, R, D, R, D, D, D, R}}, // Characteristic  4
-    {{R, R, R, R, D, R, R, D, R, D, D, D}}, // Characteristic  5
-    {{R, R, R, R, R, D, D, R, D, R, D, D}}, // Characteristic  6
-    {{D, D, R, R, R, D, R, R, R, D, R, R}}, // Characteristic  7
-    {{D, D, D, R, R, R, R, R, R, R, D, R}}, // Characteristic  8
-    {{R, D, D, D, R, R, R, R, R, R, R, D}}, // Characteristic  9
-    {{R, R, D, D, D, R, D, R, R, R, R, R}}, // Characteristic 10
-    {{R, R, R, D, D, D, R, D, R, R, R, R}}, // Characteristic 11
-    {{D, R, R, R, D, D, R, R, D, R, R, R}}, // Characteristic 12
+	{ { D, R, R, R, R, R, D, D, R, D, R, D } }, // Characteristic  1
+	{ { R, D, R, R, R, R, D, D, D, R, D, R } }, // Characteristic  2
+	{ { R, R, D, R, R, R, R, D, D, D, R, D } }, // Characteristic  3
+	{ { R, R, R, D, R, R, D, R, D, D, D, R } }, // Characteristic  4
+	{ { R, R, R, R, D, R, R, D, R, D, D, D } }, // Characteristic  5
+	{ { R, R, R, R, R, D, D, R, D, R, D, D } }, // Characteristic  6
+	{ { D, D, R, R, R, D, R, R, R, D, R, R } }, // Characteristic  7
+	{ { D, D, D, R, R, R, R, R, R, R, D, R } }, // Characteristic  8
+	{ { R, D, D, D, R, R, R, R, R, R, R, D } }, // Characteristic  9
+	{ { R, R, D, D, D, R, D, R, R, R, R, R } }, // Characteristic 10
+	{ { R, R, R, D, D, D, R, D, R, R, R, R } }, // Characteristic 11
+	{ { D, R, R, R, D, D, R, R, D, R, R, R } }, // Characteristic 12
 };
 #endif
 
@@ -71,15 +71,19 @@ characteristic current_characteristic;
 uint8_t current_char_num = 1;
 
 uint8_t passive_gpios[NUMBER_OF_PASSIVE] = {
-    GPIO_NJG_CTRL_1, GPIO_NJG_CTRL_2,  GPIO_NJG_CTRL_3,	 GPIO_NJG_CTRL_4,
-    GPIO_NJG_CTRL_5, GPIO_NJG_CTRL_6,  GPIO_NJG_CTRL_7,	 GPIO_NJG_CTRL_8,
-    GPIO_NJG_CTRL_9, GPIO_NJG_CTRL_10, GPIO_NJG_CTRL_11, GPIO_NJG_CTRL_12};
+	GPIO_NJG_CTRL_1, GPIO_NJG_CTRL_2,  GPIO_NJG_CTRL_3,  GPIO_NJG_CTRL_4,
+	GPIO_NJG_CTRL_5, GPIO_NJG_CTRL_6,  GPIO_NJG_CTRL_7,  GPIO_NJG_CTRL_8,
+	GPIO_NJG_CTRL_9, GPIO_NJG_CTRL_10, GPIO_NJG_CTRL_11, GPIO_NJG_CTRL_12
+};
 
 static void gpio_pin_write(uint8_t gpio, uint8_t val)
 {
 	mcu_gpio_pin_write(gpio, val);
 }
-static void gpio_pin_cfg(uint8_t gpio) { mcu_gpio_pin_cfg(gpio); }
+static void gpio_pin_cfg(uint8_t gpio)
+{
+	mcu_gpio_pin_cfg(gpio);
+}
 
 static void antenna_connection_init(void)
 {
@@ -159,7 +163,7 @@ bool espar_set_characteristic(uint8_t char_num)
 		uint8_t i;
 		for (i = 0; i < NUMBER_OF_PASSIVE; i++) {
 			espar_set_passive_element(
-			    i, current_characteristic.passive[i]);
+				i, current_characteristic.passive[i]);
 		}
 		return false;
 	} else {
@@ -234,7 +238,10 @@ bool espar_set_logic(uint8_t logic)
 	return true;
 }
 
-uint8_t espar_get_current_characteristic_num(void) { return current_char_num; }
+uint8_t espar_get_current_characteristic_num(void)
+{
+	return current_char_num;
+}
 
 characteristic espar_get_current_characteristic(void)
 {

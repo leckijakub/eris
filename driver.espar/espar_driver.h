@@ -9,36 +9,36 @@ extern "C" {
 #endif
 
 /* GPIOs for passive elements. */
-#define NUMBER_OF_PASSIVE                       12
+#define NUMBER_OF_PASSIVE 12
 
 #if USE_3DIR_CHARACTERISTICS
-#define NUMBER_OF_3DIR_CHAR                     12
+#define NUMBER_OF_3DIR_CHAR 12
 #else
-#define NUMBER_OF_3DIR_CHAR                     0
+#define NUMBER_OF_3DIR_CHAR 0
 #endif
 
 #if USE_5DIR_CHARACTERISTICS
-#define NUMBER_OF_5DIR_CHAR                     12
+#define NUMBER_OF_5DIR_CHAR 12
 #else
-#define NUMBER_OF_5DIR_CHAR                     0
+#define NUMBER_OF_5DIR_CHAR 0
 #endif
 
 #if USE_8DIR_CHARACTERISTICS
-#define NUMBER_OF_8DIR_CHAR                     12
+#define NUMBER_OF_8DIR_CHAR 12
 #else
-#define NUMBER_OF_8DIR_CHAR                     0
+#define NUMBER_OF_8DIR_CHAR 0
 #endif
 
-#if !(USE_3DIR_CHARACTERISTICS) && !(USE_5DIR_CHARACTERISTICS) && !(USE_8DIR_CHARACTERISTICS)
+#if !(USE_3DIR_CHARACTERISTICS) && !(USE_5DIR_CHARACTERISTICS) && \
+	!(USE_8DIR_CHARACTERISTICS)
 #error No characteristics defined!
 #endif
 
-
-
 /* Characteristics and key states. */
-#define NUMBER_OF_CHARACTERISTICS               (NUMBER_OF_3DIR_CHAR + NUMBER_OF_5DIR_CHAR + NUMBER_OF_8DIR_CHAR)
-#define R                                       0 // Reflector
-#define D                                       1 // Director
+#define NUMBER_OF_CHARACTERISTICS \
+	(NUMBER_OF_3DIR_CHAR + NUMBER_OF_5DIR_CHAR + NUMBER_OF_8DIR_CHAR)
+#define R 0 // Reflector
+#define D 1 // Director
 
 extern uint8_t current_char_num;
 
@@ -46,7 +46,7 @@ extern uint8_t current_char_num;
  * typedef characteristic - Describes a single characteristic.
  * @param passive Setting for passive elements, (e.g. {R, D, D, ..., R}).
  *
- * This type describes a single characteristic. It has an array of passive 
+ * This type describes a single characteristic. It has an array of passive
  * elements. Passive elements can act as reflectors (R) or directors (D).
  *
  * For example:
@@ -62,9 +62,8 @@ extern uint8_t current_char_num;
  *                R8
  *
  */
-typedef struct characteristic
-{
-    uint8_t passive[NUMBER_OF_PASSIVE];
+typedef struct characteristic {
+	uint8_t passive[NUMBER_OF_PASSIVE];
 } characteristic;
 
 extern uint8_t passive_gpios[NUMBER_OF_PASSIVE];
@@ -115,7 +114,7 @@ void espar_zero_all(void);
  */
 bool espar_set_characteristic(uint8_t char_num);
 
-    /**
+/**
      * espar_characteristic() - Sets next characteristic from list.
      */
 void espar_next_characteristic();

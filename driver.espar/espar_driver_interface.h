@@ -9,7 +9,8 @@
 #error "No chip defined! (e.g. NRF52840_XXAA, JN5168)"
 #endif
 
-#if !defined(ESPAR_STANDARD_V1) && !defined(ESPAR_STANDARD_V2) && !defined(ESPAR_DUAL_PASSIVE)
+#if !defined(ESPAR_STANDARD_V1) && !defined(ESPAR_STANDARD_V2) && \
+	!defined(ESPAR_DUAL_PASSIVE)
 #error "ESPAR type not defined! (e.g. ESPAR_STANDARD_V1, ESPAR_STANDARD_V2, ESPAR_DUAL_PASSIVE)"
 #endif
 

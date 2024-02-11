@@ -24,22 +24,22 @@ APP_USBD_CDC_ACM_GLOBAL_DEF(m_app_cdc_acm, cdc_acm_user_ev_handler,
 			    CDC_ACM_DATA_EPOUT,
 			    APP_USBD_CDC_COMM_PROTOCOL_AT_V250);
 
-static char m_rx_buffer[READ_SIZE];  /** @brief Used to read through CDC */
+static char m_rx_buffer[READ_SIZE]; /** @brief Used to read through CDC */
 static char m_tx_buffer[WRITE_SIZE]; /** @brief Used to send through CDC */
 static char
-    usb_ser_rx_buffer[512]; /** @brief Used to buffer received data from CDC */
-static char usb_ser_tx_buffer[512];  /** @brief Used to buffer data to send if
+	usb_ser_rx_buffer[512]; /** @brief Used to buffer received data from CDC */
+static char usb_ser_tx_buffer[512]; /** @brief Used to buffer data to send if
 					write function didn' finished */
 static char usb_ser_log_buffer[512]; /** @brief Used to place formatted string
 					using @ref USB_SER_PRINT macro */
 volatile static size_t usb_ser_rx_size =
-    0; /** @brief Stores current size of @ref usb_ser_rx_buffer buffer */
+	0; /** @brief Stores current size of @ref usb_ser_rx_buffer buffer */
 volatile static size_t usb_ser_tx_size =
-    0; /** @brief Stores current size of @ref usb_ser_tx_buffer buffer */
+	0; /** @brief Stores current size of @ref usb_ser_tx_buffer buffer */
 volatile static bool tx_in_progres =
-    false; /** @brief Indicates if CDC is occupied by write operation */
+	false; /** @brief Indicates if CDC is occupied by write operation */
 volatile static bool usb_ser_opened =
-    false; /** @brief Indicates if CDC device is ready to be used */
+	false; /** @brief Indicates if CDC device is ready to be used */
 
 static void usb_ser_write_directly(char *buf, size_t size)
 {
@@ -73,7 +73,10 @@ void usb_ser_enable()
 	usb_ser_flush();
 }
 
-void usb_ser_disable() { usb_ser_opened = false; }
+void usb_ser_disable()
+{
+	usb_ser_opened = false;
+}
 
 void usb_ser_write(char *buf, size_t size)
 {
@@ -98,7 +101,6 @@ static void cdc_acm_user_ev_handler(app_usbd_class_inst_t const *p_inst,
 
 	switch (event) {
 	case APP_USBD_CDC_ACM_USER_EVT_PORT_OPEN: {
-
 		/*Setup first transfer*/
 		ret_code_t ret = app_usbd_cdc_acm_read(&m_app_cdc_acm,
 						       m_rx_buffer, READ_SIZE);
@@ -174,8 +176,9 @@ static void usbd_user_ev_handler(app_usbd_event_type_t event)
 void usb_ser_init(void(*input_handler))
 {
 	ret_code_t ret;
-	static const app_usbd_config_t usbd_config = {.ev_state_proc =
-							  usbd_user_ev_handler};
+	static const app_usbd_config_t usbd_config = {
+		.ev_state_proc = usbd_user_ev_handler
+	};
 	app_usbd_serial_num_generate();
 
 	ret = app_usbd_init(&usbd_config);
@@ -183,7 +186,7 @@ void usb_ser_init(void(*input_handler))
 	NRF_LOG_INFO("USBD init done");
 
 	app_usbd_class_inst_t const *class_cdc_acm =
-	    app_usbd_cdc_acm_class_inst_get(&m_app_cdc_acm);
+		app_usbd_cdc_acm_class_inst_get(&m_app_cdc_acm);
 	ret = app_usbd_class_append(class_cdc_acm);
 	APP_ERROR_CHECK(ret);
 	NRF_LOG_INFO("USBD ACM init done\r\n");
@@ -195,6 +198,12 @@ void usb_ser_init(void(*input_handler))
 	NRF_LOG_INFO("USBD Started\r\n");
 }
 
-char *usb_ser_log_get_txbuf() { return usb_ser_log_buffer; }
+char *usb_ser_log_get_txbuf()
+{
+	return usb_ser_log_buffer;
+}
 
-bool usb_ser_events_process() { return app_usbd_event_queue_process(); }
+bool usb_ser_events_process()
+{
+	return app_usbd_event_queue_process();
+}
