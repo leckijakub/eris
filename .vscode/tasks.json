@@ -13,20 +13,14 @@
 		{
 			"label": "Build beacon software",
 			"type": "shell",
-			"command": "docker run -v ${workspaceFolder}:/root/nrf5_sdk/examples/${workspaceFolderBasename} ${config:docker_image} make -C /root/nrf5_sdk/examples/${workspaceFolderBasename} build_dongle",
-			"dependsOn": [
-				"Build docker"
-			],
+			"command": "make -C ${workspaceFolder} build_dongle",
 			"problemMatcher": [],
 			"group": "build"
 		},
 		{
 			"label": "Build ESPAR software",
 			"type": "shell",
-			"command": "docker run -v ${workspaceFolder}:/root/nrf5_sdk/examples/${workspaceFolderBasename} ${config:docker_image} make -C /root/nrf5_sdk/examples/${workspaceFolderBasename} build_espar",
-			"dependsOn": [
-				"Build docker"
-			],
+			"command": "make -C ${workspaceFolder} build_espar",
 			"problemMatcher": [],
 			"group": "build"
 		},
