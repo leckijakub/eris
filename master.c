@@ -37,12 +37,6 @@ uint16_t chars_array[CHAR_MAX_COMB];
 uint16_t best_char = 0;
 double best_char_bper = DBL_MAX;
 
-void espar_start()
-{
-	espar_run = 1;
-	espar_set_characteristic(0);
-}
-
 void set_char(uint16_t espar_char)
 {
 	characteristic driver_char = { .passive = { R } };
@@ -50,6 +44,14 @@ void set_char(uint16_t espar_char)
 		driver_char.passive[i] = (espar_char >> i) & 1;
 	}
 	espar_set_custom_characteristic(driver_char);
+}
+
+void espar_start()
+{
+	espar_run = 1;
+	present_espar_char = 0b111111111111;
+	set_char(present_espar_char);
+
 }
 
 const char *espar_char_as_string(int16_t x)
@@ -280,7 +282,6 @@ void master_init()
 	espar_init();
 	NRF_LOG_INFO("ESPAR INIT DONE");
 	espar_start();
-	present_espar_char = 0;
 	NRF_LOG_INFO("ESPAR START DONE");
 #endif
 }
