@@ -7,6 +7,7 @@
 #include "nrf_radio.h"
 #include "nrfx_timer.h"
 #include "nrf_drv_rng.h"
+#include "nrf_delay.h"
 #include "espar_driver.h"
 #include "radio.h"
 #include "usb_serial.h"
@@ -49,7 +50,8 @@ void set_char(uint16_t espar_char)
 void espar_start()
 {
 	espar_run = 1;
-	present_espar_char = 0b111111111111;
+	// present_espar_char = 0b111111111111;
+	present_espar_char = 0;
 	set_char(present_espar_char);
 
 }
@@ -124,11 +126,12 @@ void next_batch()
 			best_char_bper = bper;
 		}
 		// use best char if bper lower than 0.20
-		if (best_char_bper <= BPER_THRESHOLD) {
+		/* if (best_char_bper <= BPER_THRESHOLD) {
 			present_espar_char = best_char;
 		} else {
 			present_espar_char = get_next_char();
-		}
+		} */
+		present_espar_char = get_next_char();
 		set_char(present_espar_char);
 #else // BEACON \
 	// print only one of 100 batches as USB serial throughput is limited
@@ -274,9 +277,12 @@ void master_init()
 	nrf_radio_int_enable(NRF_RADIO_INT_CRCOK_MASK);
 	NVIC_EnableIRQ(RADIO_IRQn);
 
-	// Generate random order of characteristic
+	// Generate array of all possible passive characteristics from 0 to 2^12
 	init_array_range(chars_array, CHAR_MAX_COMB, 0, CHAR_MAX_COMB);
-	shuffle(chars_array, CHAR_MAX_COMB);
+	// Delay to allow log reader to connect
+	nrf_delay_ms(5000);
+	// randomize the order of characteristics
+	// shuffle(chars_array, CHAR_MAX_COMB);
 
 #ifdef BOARD_DD
 	espar_init();
