@@ -114,7 +114,7 @@ void next_batch()
 			 ", RSSI: " NRF_LOG_FLOAT_MARKER,
 			 batch_number, espar_char_as_string(present_espar_char),
 			 NRF_LOG_FLOAT(bper), NRF_LOG_FLOAT(batch_rssi_avg));
-		NRF_LOG_INFO("%s", msg);
+		NRF_LOG_RAW_INFO("\n%s\n", msg);
 
 		// update best char
 		if (bper < best_char_bper) {

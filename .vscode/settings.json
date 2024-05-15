@@ -16,7 +16,11 @@
                 "nrf_radio.h": "c",
                 "nrfx_rng.h": "c",
                 "nrf_rng.h": "c",
-                "limits.h": "c"
+                "limits.h": "c",
+                "nrf_soc.h": "c",
+                "hardfault.h": "c",
+                "sdk_config.h": "c",
+                "nrf_log.h": "c"
         },
         "C_Cpp.default.compilerPath": "/usr/bin/arm-none-eabi-gcc"
 }

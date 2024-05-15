@@ -7894,8 +7894,36 @@
 
 
 #ifndef NRF_CLI_ENABLED
-#define NRF_CLI_ENABLED 0
+#define NRF_CLI_ENABLED 1
 #endif
+
+// <e> NRF_CLI_RTT_ENABLED - nrf_cli_rtt - RTT command line interface transport
+//==========================================================
+#ifndef NRF_CLI_RTT_ENABLED
+#define NRF_CLI_RTT_ENABLED 1
+#endif
+// <o> NRF_CLI_RTT_TERMINAL_ID - RTT terminal ID for CLI.
+#ifndef NRF_CLI_RTT_TERMINAL_ID
+#define NRF_CLI_RTT_TERMINAL_ID 0
+#endif
+
+// <o> NRF_CLI_RTT_TX_RETRY_DELAY_MS - Period before retrying writing to RTT
+#ifndef NRF_CLI_RTT_TX_RETRY_DELAY_MS
+#define NRF_CLI_RTT_TX_RETRY_DELAY_MS 10
+#endif
+
+// <o> NRF_CLI_RTT_TX_RETRY_CNT - Writing to RTT retries.
+// <i> If RTT fails to accept any new data after retries
+// <i> module assumes that host is not active and on next
+// <i> request it will perform only one write attempt.
+// <i> On successful writing, module assumes that host is active
+// <i> and scheme with retry is applied again.
+
+#ifndef NRF_CLI_RTT_TX_RETRY_CNT
+#define NRF_CLI_RTT_TX_RETRY_CNT 5
+#endif
+
+// </e>
 
 // <o> NRF_CLI_ARGC_MAX - Maximum number of parameters passed to the command handler.
 #ifndef NRF_CLI_ARGC_MAX
@@ -7906,7 +7934,7 @@
 
 
 #ifndef NRF_CLI_BUILD_IN_CMDS_ENABLED
-#define NRF_CLI_BUILD_IN_CMDS_ENABLED 1
+#define NRF_CLI_BUILD_IN_CMDS_ENABLED 0
 #endif
 
 // <o> NRF_CLI_CMD_BUFF_SIZE - Maximum buffer size for a single command.
