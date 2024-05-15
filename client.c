@@ -15,7 +15,7 @@
 #include "nrf_log_default_backends.h"
 #include "nrfx_timer.h"
 #include "radio.h"
-#include "usb_serial.h"
+// #include "usb_serial.h"
 
 #define CLIENT_PACKET_INTERVAL_MS 5
 
@@ -31,7 +31,8 @@ void client_packet_handler(struct radio_packet_t *packet)
 int client_start(uint8_t power_level)
 {
 	if (!radio_power_level_valid(power_level)) {
-		USB_SER_PRINT("Invalid power level\r\n");
+		// USB_SER_PRINT("Invalid power level\r\n");
+		NRF_LOG_INFO("Invalid power level");
 		return 0;
 	}
 	NRF_RADIO->TXPOWER = (power_level << RADIO_TXPOWER_TXPOWER_Pos);
@@ -75,9 +76,11 @@ static void client_timer_init()
 
 	err = nrfx_timer_init(&client_timer, &timer_cfg, client_timer_handler);
 	if (err != NRFX_SUCCESS) {
-		USB_SER_PRINT("nrfx_timer_init failed with: %ld\r\n", err);
+		// USB_SER_PRINT("nrfx_timer_init failed with: %ld\r\n", err);
+		NRF_LOG_INFO("nrfx_timer_init failed with: %ld", err);
 	}
-	USB_SER_PRINT("CLIENT TIMER INITIALIZED\r\n");
+	// USB_SER_PRINT("CLIENT TIMER INITIALIZED\r\n");
+	NRF_LOG_INFO("CLIENT TIMER INITIALIZED");
 }
 
 void client_handler()

@@ -10,13 +10,14 @@
 #include "nrf_delay.h"
 #include "espar_driver.h"
 #include "radio.h"
-#include "usb_serial.h"
+// #include "usb_serial.h"
 #include <inttypes.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
 #include "limits.h"
 #include <float.h>
+#include "nrf_log.h"
 
 #define MASTER_WDT_TIMEOUT_MS 10
 
@@ -133,15 +134,30 @@ void next_batch()
 		} */
 		present_espar_char = get_next_char();
 		set_char(present_espar_char);
-#else // BEACON \
+#else // BEACON
+		char msg[512];
+		snprintf(msg, 512,
+			 "[BATCH %lu SUMMARY]: "
+			 "BPER: " NRF_LOG_FLOAT_MARKER
+			 ", RSSI: " NRF_LOG_FLOAT_MARKER,
+			 batch_number,
+			 NRF_LOG_FLOAT(bper), NRF_LOG_FLOAT(batch_rssi_avg));
+		NRF_LOG_RAW_INFO("\n%s\n", msg);
+
 	// print only one of 100 batches as USB serial throughput is limited
 		if (batch_number % 100 == 0) {
-			USB_SER_PRINT("[BATCH %lu SUMMARY]: BPR: %lu, "
-				      "BPER: " NRF_LOG_FLOAT_MARKER
-				      ", RSSI: " NRF_LOG_FLOAT_MARKER "\r\n",
-				      batch_number, batch_packets_received,
-				      NRF_LOG_FLOAT(bper),
-				      NRF_LOG_FLOAT(batch_rssi_avg));
+			// USB_SER_PRINT("[BATCH %lu SUMMARY]: BPR: %lu, "
+			// 	      "BPER: " NRF_LOG_FLOAT_MARKER
+			// 	      ", RSSI: " NRF_LOG_FLOAT_MARKER "\r\n",
+			// 	      batch_number, batch_packets_received,
+			// 	      NRF_LOG_FLOAT(bper),
+			// 	      NRF_LOG_FLOAT(batch_rssi_avg));
+			// NRF_LOG_INFO("[BATCH %lu SUMMARY]: BPR: %lu, "
+			// 	     "BPER: " NRF_LOG_FLOAT_MARKER
+			// 	     ", RSSI: " NRF_LOG_FLOAT_MARKER,
+			// 	     batch_number, batch_packets_received,
+			// 	     NRF_LOG_FLOAT(bper),
+			// 	     NRF_LOG_FLOAT(batch_rssi_avg));
 		}
 #endif
 	}

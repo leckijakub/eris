@@ -68,8 +68,8 @@ SRC_FILES += \
   $(SDK_ROOT)/components/libraries/fds/fds.c \
   $(SDK_ROOT)/components/libraries/cli/nrf_cli.c \
   $(SDK_ROOT)/components/libraries/cli/rtt/nrf_cli_rtt.c \
+  $(SDK_ROOT)/components/libraries/cli/cdc_acm/nrf_cli_cdc_acm.c \
   $(PROJ_DIR)/radio.c \
-  $(PROJ_DIR)/usb_serial.c \
   $(PROJ_DIR)/client.c \
   $(PROJ_DIR)/master.c \
   $(PROJ_DIR)/jammer.c \
@@ -213,6 +213,7 @@ INC_FOLDERS += \
   $(SDK_ROOT)/components/drivers_nrf/radio_config \
   $(SDK_ROOT)/components/libraries/cli \
   $(SDK_ROOT)/components/libraries/cli/rtt \
+  $(SDK_ROOT)/components/libraries/cli/cdc_acm \
   $(PROJ_DIR) \
   $(PROJ_DIR)/driver.espar \
 
